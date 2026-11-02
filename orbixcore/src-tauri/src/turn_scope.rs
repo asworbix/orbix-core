@@ -114,8 +114,9 @@ mod tests {
     #[tokio::test]
     async fn absolute_and_home_paths_ignore_the_turn_folder() {
         let scope = TurnScope { workdir: Some(std::env::temp_dir()), steps: None, origin: None };
-        let (abs, home) = scoped(scope, async { (resolve_path("/etc/hosts"), resolve_path("~/x")) }).await;
-        assert_eq!(abs, PathBuf::from("/etc/hosts"));
+        let hosts = if cfg!(windows) { r"C:\Windows\System32\drivers\etc\hosts" } else { "/etc/hosts" };
+        let (abs, home) = scoped(scope, async { (resolve_path(hosts), resolve_path("~/x")) }).await;
+        assert_eq!(abs, PathBuf::from(hosts));
         assert_eq!(home, dirs::home_dir().unwrap().join("x"));
     }
 

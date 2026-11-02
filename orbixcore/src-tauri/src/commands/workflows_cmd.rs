@@ -1010,11 +1010,16 @@ mod authoring_tests {
  {"type":"prompt","label":"Write a short brief","prompt":"Write a five-line brief of the day from the events and email."}
 ]}
 ```"#;
-        let (name, desc, steps) = parse_authored(raw).unwrap();
-        assert_eq!(name, "Morning brief");
-        assert!(desc.starts_with("Reads"));
-        assert_eq!(steps.len(), 3);
-        assert_eq!(steps[2].step_type, workflow::StepType::Prompt);
+        if cfg!(target_os = "macos") {
+            let (name, desc, steps) = parse_authored(raw).unwrap();
+            assert_eq!(name, "Morning brief");
+            assert!(desc.starts_with("Reads"));
+            assert_eq!(steps.len(), 3);
+            assert_eq!(steps[2].step_type, workflow::StepType::Prompt);
+        } else {
+            // app_bridge is a macOS tool, so the draft is refused with the reason.
+            assert!(parse_authored(raw).unwrap_err().contains("app_bridge"));
+        }
         let bad = r#"{"name":"x","steps":[{"type":"action","label":"Teleport","tool":"teleport"}]}"#;
         assert!(parse_authored(bad).unwrap_err().contains("could not run"));
         let asks = r#"{"name":"x","steps":[{"type":"prompt","label":"Ask","prompt":"Ask the user for their goals"}]}"#;
