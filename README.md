@@ -14,7 +14,7 @@
 
 Orbix Core is a desktop app built around **Bob**, an agent that runs on a local Gemma 4 or Qwen 3 model, calls real tools (your files, shell, apps, calendar, mail, the web), and turns what it learns into workflows, agents, documents, and panels. The model, speech-to-text, and text-to-speech all run on your machine. The cloud is an explicit, redacted exception, never the default.
 
-macOS is the reference platform. Windows is merged and ships with the open-source launch. Linux comes next. One codebase for all three: [docs/platforms.md](docs/platforms.md).
+Orbix Core runs on macOS and Windows from one codebase, with platform code kept behind compile-time switches. Linux is next: [docs/platforms.md](docs/platforms.md).
 
 > Reliable AI. Fraction of the cost. Your data stays on your machine.
 
@@ -29,7 +29,7 @@ _Coming with the first release: chat with Bob, Imagine, the workflow builder, vo
 ## What it does
 
 - **Bob, hands-free.** Ask by text or voice. Bob reads your calendar rather than asking what is on it, lists the folder rather than asking what is in it, and reports what it did in one line.
-- **Imagine.** One click, no request: Bob looks at what is open on your Mac, reads what matters, and makes one real thing: a briefing, a panel, a document, an interactive page, a workflow, a skill. Nudge him while he works; the result lands in the chat.
+- **Imagine.** One click, no request: Bob looks at what is open on your computer, reads what matters, and makes one real thing: a briefing, a panel, a document, an interactive page, a workflow, a skill. Nudge him while he works; the result lands in the chat.
 - **Native tool calling, verified per model.** Bob calls tools through the model's own tool-calling format and reads results back as native tool turns. Every shipped model passes the same tool-calling gate before it enters the catalog.
 - **Durable workflows.** Every execution is a resumable run with a persisted per-step log. Kill the app mid-run and it continues where it left off.
 - **Agents as employees.** Hire an agent with a charter and a tool grant; it works shifts on a schedule and reports to your inbox.
@@ -49,15 +49,15 @@ The default model, STT, and TTS run on your machine. No account is required to u
 
 | Platform | Status |
 |---|---|
-| macOS 13+ (Apple Silicon first) | Reference platform, used daily |
-| Windows 10/11 (x64) | Merged and building in CI; ships with the launch (one app bridge: classic Outlook; unsigned) |
-| Linux (x64) | Next, after Windows is supported |
+| macOS 13+ (Apple Silicon) | Supported. Signed and notarized. App bridges: Calendar, Mail, Outlook, Notes, Reminders, Messages |
+| Windows 10/11 (x64) | Supported. Installer not code-signed. App bridge: classic Outlook; GPU acceleration through CUDA or Vulkan |
+| Linux (x64) | Next |
 
 Details, the shared-versus-platform-specific matrix, and how to help with a port: [docs/platforms.md](docs/platforms.md).
 
-- **Memory decides the model.** Orbix picks the best model your machine can run comfortably and refuses ones that would load and then fail. The table below is for Apple Silicon unified memory; on Windows the CPU build of the model server needs the same RAM and runs slower until the GPU builds land.
+- **Memory decides the model.** Orbix picks the best model your machine can run comfortably and refuses ones that would load and then fail. On a Mac that is unified memory; on Windows it is graphics memory when a CUDA or Vulkan GPU is found, system memory otherwise.
 
-| Unified memory | Comfortable models |
+| Memory | Comfortable models |
 |---|---|
 | 8 GB | Gemma 4 E2B, Qwen3.5 4B |
 | 16 GB | Gemma 4 E4B (default), Gemma 4 12B, Qwen3.5 9B |
@@ -68,7 +68,7 @@ Details, the shared-versus-platform-specific matrix, and how to help with a port
 
 ## Install
 
-**From a release (recommended once v0.1.0 is out):** download the macOS DMG or the Windows installer from [Releases](https://github.com/asworbix/orbix-core/releases). Until builds are signed, macOS warns on first launch (right-click the app and choose Open) and Windows SmartScreen asks you to confirm.
+**From a release:** download the Mac DMG or the Windows installer from [Releases](https://github.com/asworbix/orbix-core/releases) or [orbixcore.ai/download](https://orbixcore.ai/download). The Mac app is signed and notarized. The Windows installer is not code-signed yet, so SmartScreen may ask you to confirm (More info, then Run anyway).
 
 **From source:**
 
@@ -85,14 +85,14 @@ npm run tauri dev
 
 ## Quick start
 
-1. Open the app. It picks a model that fits your Mac and downloads it (Gemma 4 E4B on a 16 GB machine, about 5 GB).
-2. Type or say: `what is on my calendar today` The first time, macOS asks to allow Orbix Core to control Calendar; allow it. (On Windows the one bridge so far is classic Outlook; with the new Outlook, connect a Microsoft account instead.)
+1. Open the app. It picks a model that fits your computer and downloads it (Gemma 4 E4B on a 16 GB machine, about 5 GB).
+2. Type or say: `what is on my calendar today`. On a Mac, macOS asks the first time whether Orbix Core may control Calendar; allow it. On Windows, Bob reads classic Outlook; with the new Outlook, connect a Microsoft account instead.
 3. Click the sparkle next to the input, or type `imagine`. Bob looks around and makes something.
 4. Say `every weekday at 8, read my calendar and mail and write me a briefing`. Bob creates the workflow; it appears in Build and runs on schedule.
 
 ### Local model setup
 
-Settings > Models lists the curated Gemma 4 and Qwen 3.x models with a fit label for this Mac (great, ok, tight, too big). Pick one and it downloads with resume support; vision projectors are a separate one-click download. Any other GGUF can be added from a HuggingFace repo. Models never leave the machine and can be deleted from the same screen.
+Settings > Models lists the curated Gemma 4 and Qwen 3.x models with a fit label for this computer (great, ok, tight, too big). Pick one and it downloads with resume support; vision projectors are a separate one-click download. Any other GGUF can be added from a HuggingFace repo. Models never leave the machine and can be deleted from the same screen.
 
 ### Example workflow
 
@@ -114,7 +114,7 @@ orbixcore/            Tauri desktop app
   src/                React + TypeScript front end
   src-tauri/src/      Rust backend: Bob, model engine, workflows, tools, connectors, egress, storage
 bob-cli/              The orbix terminal CLI (bob is an alias)
-browser-extension/    "Send to Orbix": ship a plan from Claude.ai or Copilot to your Mac
+browser-extension/    "Send to Orbix": ship a plan from Claude.ai or Copilot to your computer
 marketplace/          Community skills, workflows, paired apps and connectors (orbixcore.ai/marketplace)
 docs/                 Architecture and privacy
 ```
@@ -139,8 +139,8 @@ cp orbixcore/src-tauri/credentials.example.json orbixcore/src-tauri/credentials.
 
 ### Known limitations
 
-- macOS is the only platform in daily use. Windows builds and runs with a single app bridge (classic Outlook over COM; the new Outlook has no scripting interface, so there mail and calendar go through a connected account) and no code signing; Linux is not started. See [docs/platforms.md](docs/platforms.md).
-- Release builds are not yet signed or notarized; Gatekeeper warns on first launch.
+- On Windows the one app bridge is classic Outlook (the new Outlook has no scripting interface, so there mail and calendar go through a connected account); macOS has six. Linux is not started. See [docs/platforms.md](docs/platforms.md).
+- The Windows installer is not code-signed yet, so SmartScreen asks for confirmation on first run.
 - Browser driving needs Chrome started with `--remote-debugging-port=9222`.
 - Small models (E2B, 4B) are fast but less reliable at multi-step tool use; 16 GB and the E4B or 9B models are the comfortable floor.
 - Voice is English-first.
@@ -148,8 +148,8 @@ cp orbixcore/src-tauri/credentials.example.json orbixcore/src-tauri/credentials.
 
 ### Roadmap
 
-- More Windows app bridges and signing; then Linux.
-- Signed, notarized releases.
+- More app bridges on Windows, then Linux.
+- Code signing for the Windows installer.
 - More app bridges and window intelligence.
 - The iOS companion as a public remote control.
 - Adaptive model work: smaller, faster local models for the agent loop.
