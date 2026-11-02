@@ -1,6 +1,6 @@
 [package]
 name = "orbixcore"
-version = "0.1.0"
+version = "0.1.1"
 description = "OrbixCore - Your AI. Running locally. Growing with you."
 authors = ["OrbixCore Team"]
 edition = "2021"

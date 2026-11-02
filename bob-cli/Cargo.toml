@@ -1,6 +1,6 @@
 [package]
 name = "orbix-cli"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "orbix - Orbix Core's local-first agent from the terminal (bob is an alias)"
 
