@@ -58,7 +58,7 @@ whisper-rs = "0.16"
 # Memory encryption (Epic D)
 aes-gcm = "0.10"
 argon2 = "0.5"
-base64 = { version = "0.22" }
+base64 = { version = "0.23" }
 rand = "0.8"
 # Local HTTP endpoint server (/v1 + /cli routes) + browser DevTools client
 warp = "0.3"
