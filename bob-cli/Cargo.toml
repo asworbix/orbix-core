@@ -30,7 +30,7 @@ dirs = "5"
 # LAN peer discovery: browse for Orbix hosts advertising `_orbix._tcp` so
 # `orbix connect` lists them instead of the user typing an IP. Same crate the
 # app uses to advertise; pure Rust, cross-platform.
-mdns-sd = "0.20"
+mdns-sd = "0.21"
 
 [profile.release]
 opt-level = "z"
