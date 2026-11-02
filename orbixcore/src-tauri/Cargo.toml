@@ -65,7 +65,7 @@ warp = "0.3"
 tokio-tungstenite = "0.21"
 futures-util = "0.3"
 # Connectors (Epic U)
-pdf-extract = "0.7"
+pdf-extract = "0.12"
 regex = "1"
 # OAuth (PKCE flow) + audit log signing (compliance)
 sha2 = "0.10"
@@ -84,7 +84,7 @@ notify = "6"
 # devices can find it with `orbix connect`. Pure Rust, no Bonjour dependency,
 # so the same code compiles on Windows.
 mdns-sd = "0.20"
-calamine = "0.36.0"
+calamine = "0.38"
 tauri-plugin-global-shortcut = "=2.3.1"
 
 # ── Windows-only deps ──────────────────────────────────────────────────────

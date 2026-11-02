@@ -1,0 +1,17 @@
+# cargo audit (CI: Dependency audit). Each ignore names why it does not reach
+# Orbix Core and what removes it. Revisit when the parent crate updates.
+[advisories]
+ignore = [
+    # zip 6 via kokoro-micro -> ndarray-npy. All four are about
+    # ZipArchive::extract writing to disk (symlinks, permission bits, SUID).
+    # ndarray-npy only reads .npz entries into memory and never calls extract.
+    # Goes away when kokoro-micro moves to ndarray-npy with zip 9.
+    "RUSTSEC-2026-0367",
+    "RUSTSEC-2026-0368",
+    "RUSTSEC-2026-0369",
+    "RUSTSEC-2026-0429",
+    # h2 0.3 via reqwest 0.11 and warp 0.3: a malicious HTTP/2 peer can make
+    # the connection spin on empty DATA frames (denial of service, no data
+    # exposure). Goes away with the reqwest 0.12 / hyper 1 migration.
+    "RUSTSEC-2026-0258",
+]
