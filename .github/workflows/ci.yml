@@ -31,6 +31,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: orbixcore/src-tauri
+      - name: Frontend placeholder
+        # generate_context! needs frontendDist (../dist) to exist; the tests
+        # never serve it, so an empty folder is enough.
+        run: mkdir -p orbixcore/dist
       - name: cargo test
         working-directory: orbixcore/src-tauri
         # The CLI-drive / live-model / embeddings tests are #[ignore] and
@@ -86,6 +90,9 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # .gitleaks.toml uses [[allowlists]], which needs gitleaks 8.25+;
+          # the action otherwise installs an older default.
+          GITLEAKS_VERSION: 8.30.1
 
   dependencies:
     name: Dependency audit
@@ -130,10 +137,10 @@ jobs:
           echo "No em dashes found."
       - name: No personal home paths
         run: |
-          # Placeholders like /Users/you/... and /Users/x/... are fine;
+          # Placeholders like /Users/you/..., /Users/me/... and /Users/x/... are fine;
           # a real account name is not.
           if grep -rnE "/Users/[a-z]+/" --include='*.rs' --include='*.ts' --include='*.tsx' --include='*.md' --include='*.json' --include='*.sh' --include='*.yml' orbixcore bob-cli browser-extension docs README.md CONTRIBUTING.md SECURITY.md \
-               | grep -vE "/Users/(you|x|username|<[a-z]+>)/"; then
+               | grep -vE "/Users/(you|me|x|username|<[a-z]+>)/"; then
             echo "::error::Hardcoded personal path found."
             exit 1
           fi
