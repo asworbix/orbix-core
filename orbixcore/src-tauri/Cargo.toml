@@ -84,7 +84,7 @@ notify = "6"
 # devices can find it with `orbix connect`. Pure Rust, no Bonjour dependency,
 # so the same code compiles on Windows.
 mdns-sd = "0.20"
-calamine = "0.36.0"
+calamine = "0.37.0"
 tauri-plugin-global-shortcut = "=2.3.1"
 
 # ── Windows-only deps ──────────────────────────────────────────────────────
