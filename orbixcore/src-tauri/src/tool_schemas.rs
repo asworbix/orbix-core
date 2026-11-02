@@ -50,21 +50,21 @@ pub(crate) fn step_tool_names() -> Vec<&'static str> {
 
 fn step_tool_description() -> &'static str {
     if !crate::app_bridge::tier_available() {
-        "action steps: the tool to run. peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name; mcp_call runs an MCP server tool; api_call calls a connected service's API."
+        "action steps: the tool to run. peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name, only when the user names that app; mcp_call runs an MCP server tool; api_call calls a connected service's API."
     } else if cfg!(target_os = "macos") {
-        "action steps: the tool to run. app_bridge reads desktop apps (Calendar, Mail, Notes, Reminders, Messages, Outlook, plus any Bob learned). peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name (ChatGPT, Claude, Slack, ...); mcp_call runs an MCP server tool; api_call calls a connected service's API."
+        "action steps: the tool to run. app_bridge reads desktop apps (Calendar, Mail, Notes, Reminders, Messages, Outlook, plus any Bob learned). peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name, only when the user names that app (ChatGPT, Claude, Slack, ...); mcp_call runs an MCP server tool; api_call calls a connected service's API."
     } else {
-        "action steps: the tool to run. app_bridge reads desktop apps (Outlook mail and calendar). peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name; mcp_call runs an MCP server tool; api_call calls a connected service's API."
+        "action steps: the tool to run. app_bridge reads desktop apps (Outlook mail and calendar). peer_send/peer_read/peer_open/peer_press/peer_fill act on a PAIRED APP by name, only when the user names that app; mcp_call runs an MCP server tool; api_call calls a connected service's API."
     }
 }
 
 fn step_tool_args_description() -> &'static str {
     if !crate::app_bridge::tier_available() {
-        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path} (forward slashes). peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result, e.g. peer_send {\"app\":\"ChatGPT\",\"text\":\"Summarise: {{prev}}\"}."
+        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path} (forward slashes). peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result, e.g. file_write {\"path\":\"~/Documents/briefing.md\",\"content\":\"{{prev}}\"}."
     } else if cfg!(target_os = "macos") {
-        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path}. app_bridge: {app, action, args} e.g. {\"app\":\"Calendar\",\"action\":\"upcoming_events\",\"args\":{\"days\":1}}. peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result, e.g. peer_send {\"app\":\"ChatGPT\",\"text\":\"Summarise: {{prev}}\"}."
+        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path}. app_bridge: {app, action, args} e.g. {\"app\":\"Calendar\",\"action\":\"upcoming_events\",\"args\":{\"days\":1}}. peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result, e.g. file_write {\"path\":\"~/Documents/briefing.md\",\"content\":\"{{prev}}\"}."
     } else {
-        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path} (forward slashes). app_bridge: {app, action, args} e.g. {\"app\":\"Outlook\",\"action\":\"upcoming_events\",\"args\":{\"days\":1}}. peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result."
+        "arguments for `tool`. web_search: {query}. web_fetch: {url}. file tools: {path} (forward slashes). app_bridge: {app, action, args} e.g. {\"app\":\"Outlook\",\"action\":\"upcoming_events\",\"args\":{\"days\":1}}. peer_send: {app, text}. peer_read: {app}. peer_open: {app, action, args}. peer_press: {app, control}. peer_fill: {app, field, value}. mcp_call: {server, tool, args}. api_call: {connector, method, url, body}. Use {{prev}} to pass the previous step's result, e.g. file_write {\"path\":\"~/Documents/briefing.md\",\"content\":\"{{prev}}\"}."
     }
 }
 
@@ -101,7 +101,7 @@ pub(crate) fn bob_tools() -> serde_json::Value {
         "properties": {
             "type": {"type": "string", "enum": ["prompt", "action"]},
             "label": {"type": "string"},
-            "prompt": {"type": "string", "description": "prompt steps: the FULL instruction the model runs, written out"},
+            "prompt": {"type": "string", "description": "prompt steps: the FULL instruction the model runs, written out. Summarising, writing and reasoning are prompt steps; they run on the local model"},
             "tool": {"type": "string",
                      "enum": step_tool_names(),
                      "description": step_tool_description()},

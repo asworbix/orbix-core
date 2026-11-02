@@ -23,7 +23,7 @@ fn autosave_conversation(state: &AppState) {
 
 #[tauri::command]
 pub(crate) async fn bob_send(content: String, images: Option<Vec<String>>, state: State<'_, AppState>, app: tauri::AppHandle) -> Result<Message, String> {
-    let result = bob_send_inner(content, images, state, app).await;
+    let result = crate::turn_scope::with_request(content.clone(), bob_send_inner(content, images, state, app)).await;
     // Run monitor: close the turn's entry whichever way it ended.
     match &result {
         Ok(reply) => {

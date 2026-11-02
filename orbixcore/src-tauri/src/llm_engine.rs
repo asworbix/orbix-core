@@ -636,6 +636,40 @@ pub(crate) fn strip_inputs_blocks(text: &str) -> String {
     out.trim().to_string()
 }
 
+/// A step Bob wrote that hands data to another app (peer_send, peer_fill,
+/// peer_press, peer_open) is only allowed when the person named that app.
+/// A small model copied a "send it to ChatGPT" example into a plain
+/// summarise step (v0.1.0), which would have pasted local data into a
+/// cloud app nobody asked for. Thinking and writing are prompt steps; they
+/// run on the local model. `request` is the user's message for the turn,
+/// None when no one typed one (Imagine, agent shifts).
+pub(crate) fn unrequested_peer_step(
+    config: &std::collections::HashMap<String, serde_json::Value>,
+    request: Option<&str>,
+) -> Option<String> {
+    let tool = config.get("tool").and_then(|v| v.as_str()).unwrap_or("").trim();
+    if !matches!(tool, "peer_send" | "peer_fill" | "peer_press" | "peer_open") {
+        return None;
+    }
+    let app = config
+        .get("tool_args")
+        .and_then(|a| a["app"].as_str())
+        .unwrap_or("")
+        .trim();
+    let named = !app.is_empty()
+        && request.is_some_and(|r| r.to_lowercase().contains(&app.to_lowercase()));
+    if named {
+        None
+    } else {
+        Some(format!(
+            "uses {} to hand data to \"{}\", which the user did not ask for. \
+             To summarise, write or reason, use a prompt step (type \"prompt\"): it runs on the local model",
+            tool,
+            if app.is_empty() { "an app" } else { app }
+        ))
+    }
+}
+
 pub(crate) fn workflow_step_gap(
     step_type: &workflow::StepType,
     config: &std::collections::HashMap<String, serde_json::Value>,
@@ -809,14 +843,47 @@ pub(crate) fn extract_json_object(text: &str) -> Option<String> {
     None
 }
 
+/// A step's tool arguments: `tool_args`, plus any argument written beside
+/// the tool instead of inside it ({"tool": "shell_exec", "command": "ls"}).
+/// Models write both shapes; the tool only read tool_args, so the run failed
+/// with "Missing required argument: command" (v0.1.0). Used when a step is
+/// saved and again when it runs, so workflows saved earlier work too.
+pub(crate) fn step_tool_args(config: &HashMap<String, serde_json::Value>) -> serde_json::Value {
+    let mut args = match config.get("tool_args") {
+        Some(serde_json::Value::Object(m)) => m.clone(),
+        _ => serde_json::Map::new(),
+    };
+    for key in ["command", "path", "content", "url", "query"] {
+        if let Some(serde_json::Value::String(v)) = config.get(key) {
+            args.entry(key.to_string()).or_insert_with(|| serde_json::Value::String(v.clone()));
+        }
+    }
+    serde_json::Value::Object(args)
+}
+
 /// Bob's step JSON (create_workflow / update_workflow) to stored steps.
 /// Every executable key is copied into the untyped step config.
 pub(crate) fn workflow_steps_from_json(steps: &serde_json::Value) -> Vec<workflow::WorkflowStep> {
     let mut out = Vec::new();
     let Some(steps) = steps.as_array() else { return out };
     for (i, s) in steps.iter().enumerate() {
+        // A model often writes a prompt step as {"tool": "prompt", "prompt":
+        // ...} or leaves `type` out. Read either as a prompt step: rejected
+        // as an unknown tool, Bob fell back to a shell echo or to sending
+        // the text to a paired cloud app (v0.1.0).
+        let tool = s["tool"].as_str().unwrap_or("").trim();
+        let has_prompt = s["prompt"].as_str().is_some_and(|p| !p.trim().is_empty());
+        let runs_something = !tool.is_empty() && tool != "prompt"
+            || ["command", "connector_id", "api_url", "destination"].iter().any(|k| !s[*k].is_null());
+        let declared = s["type"].as_str();
+        let is_prompt = declared == Some("prompt")
+            || (has_prompt && tool == "prompt")
+            || (declared.is_none() && has_prompt && !runs_something);
         let mut config: HashMap<String, serde_json::Value> = HashMap::new();
         for key in ["command", "prompt", "path", "content", "condition", "connector_id", "api_url", "method", "tool"] {
+            if key == "tool" && tool == "prompt" {
+                continue;
+            }
             if let Some(v) = s[key].as_str() {
                 config.insert(key.to_string(), serde_json::Value::String(v.to_string()));
             }
@@ -832,10 +899,16 @@ pub(crate) fn workflow_steps_from_json(steps: &serde_json::Value) -> Vec<workflo
         if let Some(map) = s["map"].as_bool() {
             config.insert("map".to_string(), serde_json::json!(map));
         }
+        if !tool.is_empty() && tool != "prompt" {
+            let args = step_tool_args(&config);
+            if !args.as_object().is_some_and(|m| m.is_empty()) {
+                config.insert("tool_args".to_string(), args);
+            }
+        }
         out.push(workflow::WorkflowStep {
             id: Uuid::new_v4().to_string(),
             order: i,
-            step_type: match s["type"].as_str().unwrap_or("action") {
+            step_type: match if is_prompt { "prompt" } else { declared.unwrap_or("action") } {
                 "prompt" => workflow::StepType::Prompt,
                 "condition" => workflow::StepType::Condition,
                 "wait" => workflow::StepType::Wait,
@@ -887,6 +960,71 @@ mod workflow_runnability_tests {
         } else {
             assert!(gap.unwrap().contains("does not exist"));
         }
+    }
+
+    #[test]
+    fn handing_data_to_an_app_needs_the_user_to_name_it() {
+        use super::unrequested_peer_step;
+        let step = |tool: &str, app: &str| {
+            let mut cfg = std::collections::HashMap::new();
+            cfg.insert("tool".to_string(), serde_json::json!(tool));
+            cfg.insert("tool_args".to_string(), serde_json::json!({"app": app, "text": "Summarise: {{prev}}"}));
+            cfg
+        };
+        // The v0.1.0 case: a summarise request became a ChatGPT send.
+        let asked = "Create a workflow that writes a five-line digest of the latest commits";
+        let gap = unrequested_peer_step(&step("peer_send", "ChatGPT"), Some(asked)).unwrap();
+        assert!(gap.contains("prompt step"), "{}", gap);
+        // Named by the user: allowed, case-insensitive.
+        assert!(unrequested_peer_step(&step("peer_send", "ChatGPT"), Some("then ask chatgpt to review it")).is_none());
+        // No one typed anything (Imagine, agent shifts): never hand data off.
+        assert!(unrequested_peer_step(&step("peer_fill", "Slack"), None).is_some());
+        // Reading a paired app and every non-peer tool stay allowed.
+        assert!(unrequested_peer_step(&step("peer_read", "ChatGPT"), Some(asked)).is_none());
+        assert!(unrequested_peer_step(&step("file_write", ""), Some(asked)).is_none());
+    }
+
+    #[test]
+    fn prompt_steps_are_recognised_however_the_model_writes_them() {
+        use crate::workflow::StepType;
+        let steps = workflow_steps_from_json(&serde_json::json!([
+            // Exactly what Gemma 4 E4B sent (v0.1.0 replay log).
+            {"label": "Generate digest", "tool": "prompt", "prompt": "Write a five-line digest of: {{prev1}}"},
+            {"label": "No type", "prompt": "Summarise {{prev}}"},
+            {"type": "action", "label": "Typed action", "tool": "prompt", "prompt": "Tidy it"},
+            {"label": "Shell", "tool": "shell_exec", "tool_args": {"command": "ls"}},
+            {"label": "Old style", "command": "echo hi", "prompt": "unused"}
+        ]));
+        assert_eq!(steps[0].step_type, StepType::Prompt);
+        assert!(!steps[0].config.contains_key("tool"));
+        assert!(workflow_step_gap(&steps[0].step_type, &steps[0].config).is_none());
+        assert_eq!(steps[1].step_type, StepType::Prompt);
+        assert_eq!(steps[2].step_type, StepType::Prompt);
+        assert_eq!(steps[3].step_type, StepType::Action);
+        assert_eq!(steps[4].step_type, StepType::Action);
+    }
+
+    #[test]
+    fn arguments_written_beside_the_tool_reach_it() {
+        let steps = workflow_steps_from_json(&serde_json::json!([
+            // What Gemma 4 E4B sent: command next to tool, no tool_args.
+            {"type": "action", "label": "Log", "tool": "shell_exec", "command": "git log -n 10"},
+            {"type": "action", "label": "Both", "tool": "file_read", "path": "a.txt", "tool_args": {"path": "b.txt"}}
+        ]));
+        assert_eq!(steps[0].config["tool_args"]["command"], "git log -n 10");
+        // An explicit tool_args value wins.
+        assert_eq!(steps[1].config["tool_args"]["path"], "b.txt");
+        // A step saved by v0.1.0 (no tool_args) still gets its command at run time.
+        let mut saved = std::collections::HashMap::new();
+        saved.insert("tool".to_string(), serde_json::json!("shell_exec"));
+        saved.insert("command".to_string(), serde_json::json!("git log -n 10"));
+        assert_eq!(super::step_tool_args(&saved)["command"], "git log -n 10");
+    }
+
+    #[test]
+    fn step_examples_never_suggest_a_cloud_app() {
+        let tools = crate::tool_schemas::bob_tools().to_string();
+        assert!(!tools.contains("Summarise: {{prev}}"), "a workflow example hands data to an app again");
     }
 
     #[test]
@@ -1288,10 +1426,12 @@ pub async fn execute_actions_counted(
                         // Runnability gate: reject hollow steps with the exact
                         // reason so the agentic loop can retry with substance.
                         let mut return_confirmation: Option<String> = None;
+                        let request = crate::turn_scope::request();
                         let gaps: Vec<String> = wf_steps
                             .iter()
                             .filter_map(|s| {
                                 workflow_step_gap(&s.step_type, &s.config)
+                                    .or_else(|| unrequested_peer_step(&s.config, request.as_deref()))
                                     .map(|g| format!("- '{}': {}", s.label, g))
                             })
                             .collect();
@@ -1346,21 +1486,35 @@ pub async fn execute_actions_counted(
                             _ => workflow::WorkflowTrigger::Manual,
                         };
 
-                        let wf_id = Uuid::new_v4().to_string();
-                        let wf = workflow::Workflow {
-                            id: wf_id.clone(),
-                            name: wf_name.clone(),
-                            description: wf_desc,
-                            steps: wf_steps.clone(),
-                            trigger,
-                            deliver: Default::default(),
-                            created_at: Utc::now().to_rfc3339(),
-                            updated_at: Utc::now().to_rfc3339(),
-                        };
-                        {
+                        // A create with a name that already exists replaces
+                        // that workflow. Bob retries a failed run by sending
+                        // create_workflow again; each retry used to add one
+                        // more copy (four "Weekly repo digest"s, v0.1.0).
+                        let (wf_id, replaced) = {
                             let mut store = state.automation.workflow_store.lock().unwrap_or_else(|e| e.into_inner());
-                            store.workflows.push(wf);
+                            let out = store.upsert_by_name(workflow::Workflow {
+                                id: Uuid::new_v4().to_string(),
+                                name: wf_name.clone(),
+                                description: wf_desc,
+                                steps: wf_steps.clone(),
+                                trigger,
+                                deliver: Default::default(),
+                                created_at: Utc::now().to_rfc3339(),
+                                updated_at: Utc::now().to_rfc3339(),
+                            });
                             store.save();
+                            out
+                        };
+                        // The old schedule goes with the old version; the
+                        // new one (if any) is registered below.
+                        if replaced {
+                            let mut sched = state.automation.scheduler_store.lock().unwrap_or_else(|e| e.into_inner());
+                            let stale: Vec<String> = sched.list_schedules().into_iter()
+                                .filter(|s| s.workflow_id == wf_id).map(|s| s.id).collect();
+                            if !stale.is_empty() {
+                                for id in &stale { sched.delete_schedule(id); }
+                                sched.save();
+                            }
                         }
                         // Register the scheduler entry so the tick actually
                         // fires it (the Schedule trigger alone is inert).
@@ -1384,7 +1538,7 @@ pub async fn execute_actions_counted(
                             // surfaces as a failure instead of fake success.
                             match run_workflow_core(&wf_id, state, _app).await {
                                 Ok(rs) if rs.status == workflow::WorkflowRunStatus::Failed => format!(
-                                    "**Workflow \"{}\" ran but a step failed:** {}",
+                                    "**Workflow \"{}\" ran but a step failed:** {}\n\nFix the failing step with update_workflow (same name); do not create another copy.",
                                     wf_name,
                                     rs.error.unwrap_or_else(|| "unknown error".into())
                                 ),
@@ -1399,7 +1553,8 @@ pub async fn execute_actions_counted(
                                 ),
                             }
                         } else {
-                            format!("**Workflow \"{}\" created** with {} steps, every one runnable.{} Run it from the Workflows panel.", wf_name, wf_steps.len(), schedule_note)
+                            let verb = if replaced { "updated" } else { "created" };
+                            format!("**Workflow \"{}\" {}** with {} steps, every one runnable.{} Run it from the Workflows panel.", wf_name, verb, wf_steps.len(), schedule_note)
                         }
                         }
                     }
@@ -1438,8 +1593,11 @@ pub async fn execute_actions_counted(
                         let new_desc = action["description"].as_str().map(|s| s.to_string());
                         let new_steps = if action["steps"].is_array() { Some(workflow_steps_from_json(&action["steps"])) } else { None };
                         // The same runnability check create_workflow applies.
+                        let request = crate::turn_scope::request();
                         let gaps: Vec<String> = new_steps.as_ref().map(|steps| steps.iter().filter_map(|st| {
-                            workflow_step_gap(&st.step_type, &st.config).map(|g| format!("\"{}\" {}", st.label, g))
+                            workflow_step_gap(&st.step_type, &st.config)
+                                .or_else(|| unrequested_peer_step(&st.config, request.as_deref()))
+                                .map(|g| format!("\"{}\" {}", st.label, g))
                         }).collect()).unwrap_or_default();
                         if !gaps.is_empty() {
                             format!("**[ERR] Workflow \"{}\" NOT updated - {} step(s) are empty shells:**\n{}", wf_name, gaps.len(), gaps.join("\n"))
@@ -3194,7 +3352,7 @@ pub(crate) async fn execute_workflow_step(step: &workflow::WorkflowStep, raw_con
             // is what lets "ask ChatGPT, then put it in Notes, then post the
             // link in Slack" run on a schedule.
             if let Some(tool_name) = step.config.get("tool").and_then(|v| v.as_str()) {
-                let args = step.config.get("tool_args").cloned().unwrap_or_else(|| serde_json::json!({}));
+                let args = step_tool_args(&step.config);
                 if let Some(done) = run_capability_step(tool_name, &args, state).await {
                     return done;
                 }
@@ -3205,8 +3363,9 @@ pub(crate) async fn execute_workflow_step(step: &workflow::WorkflowStep, raw_con
             // capabilities beat the legacy free-text paths.
             if let Some(tool_name) = step.config.get("tool").and_then(|v| v.as_str()) {
                 if tools::is_builtin_tool(tool_name) {
-                    let args: HashMap<String, serde_json::Value> = step.config.get("tool_args")
-                        .and_then(|v| v.as_object().cloned())
+                    let args: HashMap<String, serde_json::Value> = step_tool_args(&step.config)
+                        .as_object()
+                        .cloned()
                         .map(|m| m.into_iter().collect())
                         .unwrap_or_default();
                     let result = tools::execute_tool(tool_name, &args, &tools::ToolCtx { state, agent_id: "workflow" }).await;

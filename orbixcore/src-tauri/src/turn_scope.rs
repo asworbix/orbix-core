@@ -50,6 +50,23 @@ pub fn origin() -> Option<String> {
     TURN_SCOPE.try_with(|s| s.origin.clone()).ok().flatten()
 }
 
+tokio::task_local! {
+    static USER_REQUEST: String;
+}
+
+/// Run `fut` with the user's message for this Bob turn visible to every
+/// tool it awaits. Set for every turn, the window's included, so a tool can
+/// check what the person actually asked for.
+pub async fn with_request<F: std::future::Future>(request: String, fut: F) -> F::Output {
+    USER_REQUEST.scope(request, fut).await
+}
+
+/// The user's message for this turn. None outside a Bob turn (Imagine,
+/// agent shifts, scheduled runs): nobody typed anything there.
+pub fn request() -> Option<String> {
+    USER_REQUEST.try_with(|r| r.clone()).ok()
+}
+
 /// Forward a progress label to the caller, if one is listening. A caller
 /// that went away is not an error: the turn finishes regardless.
 pub fn step(label: &str) {
@@ -102,6 +119,13 @@ pub fn prompt_line() -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn the_request_is_visible_only_inside_its_turn() {
+        assert_eq!(request(), None);
+        let got = with_request("ask ChatGPT".into(), async { request() }).await;
+        assert_eq!(got.as_deref(), Some("ask ChatGPT"));
+    }
 
     #[tokio::test]
     async fn relative_paths_resolve_against_the_turn_folder() {

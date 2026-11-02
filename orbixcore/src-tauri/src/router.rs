@@ -115,7 +115,9 @@ pub fn try_route(input: &str, state: &AppState) -> Option<RouterResult> {
 
     // ── Run workflow / chain ──────────────────────────────────────────
     if let Some((kind, name)) = match_run(&lower) {
-        return Some(run_kind(kind, &name, state));
+        if let Some(not_found) = run_kind(kind, &name, state) {
+            return Some(not_found);
+        }
     }
 
     // ── Toggle agent / trigger / mcp ──────────────────────────────────
@@ -411,47 +413,52 @@ fn list_kind(kind: &str, state: &AppState) -> RouterResult {
     }
 }
 
-fn run_kind(kind: &str, name: &str, state: &AppState) -> RouterResult {
+/// The workflow a spoken name refers to. "Weekly repo digest now." should
+/// find "Weekly repo digest": exact match first, then a name that contains
+/// what was said, then the longest name that what was said contains.
+fn find_workflow_by_spoken_name<'a>(workflows: &'a [crate::workflow::Workflow], said: &str) -> Option<&'a crate::workflow::Workflow> {
+    let q = said.trim().trim_end_matches(|c: char| c.is_ascii_punctuation()).trim().to_lowercase();
+    if q.is_empty() {
+        return None;
+    }
+    let lower = |w: &crate::workflow::Workflow| w.name.trim().to_lowercase();
+    workflows.iter().find(|w| lower(w) == q)
+        .or_else(|| workflows.iter().find(|w| lower(w).contains(&q)))
+        .or_else(|| workflows.iter().filter(|w| !lower(w).is_empty() && q.contains(&lower(w))).max_by_key(|w| w.name.len()))
+}
+
+/// A run request answers here only when nothing by that name exists. A
+/// match goes on to Bob, whose run_workflow tool actually starts it: this
+/// shortcut used to reply "Running workflow X" and run nothing (v0.1.0).
+fn run_kind(kind: &str, name: &str, state: &AppState) -> Option<RouterResult> {
     match kind {
         "workflow" => {
-            // Best-effort name match; the actual execution still needs LLM context.
-            // For now just report the match and let the full Bob path handle execution.
             let store = state.automation.workflow_store.lock().unwrap_or_else(|e| e.into_inner());
-            let found = store.workflows.iter().find(|w| {
-                w.name.to_lowercase() == name.to_lowercase() || w.name.to_lowercase().contains(&name.to_lowercase())
-            });
-            if let Some(w) = found {
-                let label = format!("Starting workflow '{}'", w.name);
-                RouterResult::simple(
-                    format!("Running workflow **{}**. Check the step pill for progress.", w.name),
-                    label,
-                )
+            if find_workflow_by_spoken_name(&store.workflows, name).is_some() {
+                None
             } else {
-                RouterResult::simple(
+                Some(RouterResult::simple(
                     format!("No workflow found matching '{}'. Say 'list workflows' to see available ones.", name),
                     "Workflow not found",
-                )
+                ))
             }
         }
         "chain" => {
             let store = state.automation.orchestrator_store.lock().unwrap_or_else(|e| e.into_inner());
-            let chains = store.list_chains();
-            let found = chains.iter().find(|c| {
-                c.name.to_lowercase() == name.to_lowercase() || c.name.to_lowercase().contains(&name.to_lowercase())
-            });
-            if let Some(c) = found {
-                RouterResult::simple(
-                    format!("Running chain **{}** ({:?}).", c.name, c.mode),
-                    format!("Starting chain '{}'", c.name),
-                )
+            let q = name.trim().trim_end_matches(|c: char| c.is_ascii_punctuation()).to_lowercase();
+            if store.list_chains().iter().any(|c| {
+                let n = c.name.to_lowercase();
+                n == q || n.contains(&q) || (!n.is_empty() && q.contains(&n))
+            }) {
+                None
             } else {
-                RouterResult::simple(
+                Some(RouterResult::simple(
                     format!("No chain found matching '{}'. Say 'list chains' to see available ones.", name),
                     "Chain not found",
-                )
+                ))
             }
         }
-        _ => RouterResult::simple(format!("Can't run '{}'.", kind), "Unknown run target"),
+        _ => None,
     }
 }
 
@@ -641,4 +648,24 @@ fn dismiss_notifications(state: &AppState) -> RouterResult {
     let mut store = state.connect.notification_store.lock().unwrap_or_else(|e| e.into_inner());
     store.dismiss_all();
     RouterResult::simple("Inbox cleared.", "Clearing inbox")
+}
+
+#[cfg(test)]
+mod spoken_name_tests {
+    use super::find_workflow_by_spoken_name;
+
+    fn wf(name: &str) -> crate::workflow::Workflow {
+        serde_json::from_value(serde_json::json!({
+            "id": name, "name": name, "description": "", "steps": [],
+            "trigger": "manual", "created_at": "", "updated_at": ""
+        })).unwrap()
+    }
+
+    #[test]
+    fn extra_words_after_the_name_still_find_it() {
+        let all = vec![wf("Weekly repo digest"), wf("Lead Scout")];
+        assert_eq!(find_workflow_by_spoken_name(&all, "weekly repo digest now.").unwrap().name, "Weekly repo digest");
+        assert_eq!(find_workflow_by_spoken_name(&all, "lead").unwrap().name, "Lead Scout");
+        assert!(find_workflow_by_spoken_name(&all, "invoices").is_none());
+    }
 }

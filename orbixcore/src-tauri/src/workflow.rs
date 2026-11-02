@@ -131,6 +131,29 @@ impl WorkflowStore {
         }
     }
 
+    /// Add `wf`, or, when a workflow with the same name exists, replace its
+    /// description, steps and trigger and keep its id. Returns the id and
+    /// whether an existing workflow was replaced. Bob retries a failed run
+    /// by creating the workflow again; each retry used to add a copy.
+    pub fn upsert_by_name(&mut self, wf: Workflow) -> (String, bool) {
+        let existing = self.workflows.iter_mut()
+            .find(|w| w.name.trim().eq_ignore_ascii_case(wf.name.trim()));
+        match existing {
+            Some(w) => {
+                w.description = wf.description;
+                w.steps = wf.steps;
+                w.trigger = wf.trigger;
+                w.updated_at = wf.updated_at;
+                (w.id.clone(), true)
+            }
+            None => {
+                let id = wf.id.clone();
+                self.workflows.push(wf);
+                (id, false)
+            }
+        }
+    }
+
     /// Persist current workflows to disk
     pub fn save(&self) {
         crate::storage::save_workflows(&self.workflows).ok();
@@ -237,5 +260,42 @@ impl WorkflowStore {
 
     pub fn get_run_state(&self) -> Option<WorkflowRunState> {
         self.run_state.clone()
+    }
+}
+
+#[cfg(test)]
+mod upsert_tests {
+    use super::*;
+
+    fn wf(id: &str, name: &str, steps: usize) -> Workflow {
+        Workflow {
+            id: id.into(),
+            name: name.into(),
+            description: String::new(),
+            steps: (0..steps)
+                .map(|i| WorkflowStep {
+                    id: format!("s{}", i),
+                    order: i,
+                    step_type: StepType::Prompt,
+                    label: format!("step {}", i),
+                    config: Default::default(),
+                })
+                .collect(),
+            trigger: WorkflowTrigger::Manual,
+            deliver: Default::default(),
+            created_at: "c".into(),
+            updated_at: "u".into(),
+        }
+    }
+
+    #[test]
+    fn creating_a_workflow_twice_replaces_it() {
+        let mut store = WorkflowStore { workflows: vec![], run_state: None };
+        assert_eq!(store.upsert_by_name(wf("a", "Weekly repo digest", 3)), ("a".to_string(), false));
+        assert_eq!(store.upsert_by_name(wf("b", "weekly repo digest ", 2)), ("a".to_string(), true));
+        assert_eq!(store.workflows.len(), 1);
+        assert_eq!(store.workflows[0].steps.len(), 2);
+        assert_eq!(store.upsert_by_name(wf("c", "Morning briefing", 1)), ("c".to_string(), false));
+        assert_eq!(store.workflows.len(), 2);
     }
 }
