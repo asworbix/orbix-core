@@ -878,11 +878,15 @@ mod workflow_runnability_tests {
         cfg.insert("tool".to_string(), serde_json::json!("peer_send"));
         cfg.insert("tool_args".to_string(), serde_json::json!({"app": "Nowhere", "text": "hi"}));
         assert!(workflow_step_gap(&StepType::Action, &cfg).unwrap().contains("not paired"));
-        // Bridge actions must exist on the app.
+        // Bridge actions must exist on the app; app_bridge is a macOS tool.
         cfg.insert("tool".to_string(), serde_json::json!("app_bridge"));
         cfg.insert("tool_args".to_string(), serde_json::json!({"app": "Mail", "action": "get_unread_emails"}));
         let gap = workflow_step_gap(&StepType::Action, &cfg);
-        assert!(gap.is_none() || gap.as_ref().unwrap().contains("does not have"), "{:?}", gap);
+        if cfg!(target_os = "macos") {
+            assert!(gap.is_none() || gap.as_ref().unwrap().contains("does not have"), "{:?}", gap);
+        } else {
+            assert!(gap.unwrap().contains("does not exist"));
+        }
     }
 
     #[test]
@@ -918,11 +922,13 @@ mod workflow_runnability_tests {
 
     #[test]
     fn substantive_steps_pass() {
-        assert!(workflow_step_gap(
+        // app_bridge is a macOS tool; elsewhere the step is (correctly) refused.
+        let bridge = workflow_step_gap(
             &StepType::Action,
             &cfg(&[("tool", serde_json::json!("app_bridge")),
                    ("tool_args", serde_json::json!({"app":"Calendar","action":"upcoming_events"}))]),
-        ).is_none());
+        );
+        assert_eq!(bridge.is_none(), cfg!(target_os = "macos"), "{:?}", bridge);
         assert!(workflow_step_gap(&StepType::Prompt, &cfg(&[("prompt", serde_json::json!("Summarise the inputs."))])).is_none());
         assert!(workflow_step_gap(&StepType::Action, &cfg(&[("command", serde_json::json!("date"))])).is_none());
     }
