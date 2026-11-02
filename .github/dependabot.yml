@@ -1,21 +1,36 @@
 version: 2
+# One grouped pull request per ecosystem per month. Security fixes still
+# arrive as soon as an advisory is published.
 updates:
   - package-ecosystem: cargo
     directory: /orbixcore/src-tauri
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      app-crates:
+        patterns: ["*"]
   - package-ecosystem: cargo
     directory: /bob-cli
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 3
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      cli-crates:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /orbixcore
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      npm:
+        patterns: ["*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      actions:
+        patterns: ["*"]
