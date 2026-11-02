@@ -19,7 +19,6 @@ git push origin v0.1.0
 | Runner | Artifacts |
 |---|---|
 | `macos-14` (arm64) | `Orbix Core_<v>_aarch64.dmg`, plus `.app.tar.gz` and `.sig` when the updater key is set |
-| `macos-13` (x86_64) | the same for Intel |
 | `windows-latest` | `Orbix Core_<v>_x64-setup.exe`, `Orbix Core_<v>_x64_en-US.msi`, plus `.sig` files when the updater key is set |
 
 A final job writes `SHA256SUMS.txt` and opens a **draft** GitHub Release with generated notes and every artifact attached.
