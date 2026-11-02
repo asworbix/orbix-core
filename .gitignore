@@ -40,9 +40,6 @@ orbixcore/release-overrides.json
 **/xcuserdata/
 **/*.xcuserstate
 
-# Claude Code runtime state
-.claude/scheduled_tasks.lock
-
 # Dev scratch / personal notes
 feedback-*.md
 
