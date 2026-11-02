@@ -62,7 +62,7 @@ base64 = { version = "0.22" }
 rand = "0.8"
 # Local HTTP endpoint server (/v1 + /cli routes) + browser DevTools client
 warp = "0.3"
-tokio-tungstenite = "0.21"
+tokio-tungstenite = "0.30"
 futures-util = "0.3"
 # Connectors (Epic U)
 pdf-extract = "0.7"
