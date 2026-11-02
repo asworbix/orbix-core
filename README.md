@@ -24,7 +24,9 @@ Most local AI apps are a chat window in front of a model. Orbix Core is an agent
 
 ## Screenshots
 
-_Coming with the first release: chat with Bob, Imagine, the workflow builder, voice mode._
+<p align="center"><img src="docs/images/bob-app-bridges.png" width="760" alt="Bob in the Orbix Core app, listing the Mac apps he can read: Outlook, Mail, Calendar, Notes, Reminders and Messages" /></p>
+
+<p align="center"><em>Bob on a Mac with Gemma 4 E4B running locally, listing the apps he can read without any account setup.</em></p>
 
 ## What it does
 
