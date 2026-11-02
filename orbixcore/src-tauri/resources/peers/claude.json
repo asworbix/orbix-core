@@ -1,0 +1,32 @@
+{
+  "app": "Claude",
+  "aliases": [
+    "claude desktop",
+    "claude app",
+    "anthropic claude"
+  ],
+  "bundle_ids": [
+    "com.anthropic.claudefordesktop"
+  ],
+  "process_names": [
+    "Claude"
+  ],
+  "transports": [
+    "mcp",
+    "devtools",
+    "accessibility",
+    "clipboard"
+  ],
+  "mcp": {
+    "config_path": "~/Library/Application Support/Claude/claude_desktop_config.json",
+    "config_path_windows": "%APPDATA%\\Claude\\claude_desktop_config.json",
+    "servers_key": "mcpServers",
+    "restart_required": true
+  },
+  "bob_line": "Claude can now call me for anything on this Mac: files, apps, workflows, memory.",
+  "devtools": {
+    "composer": "div.ProseMirror[contenteditable='true']",
+    "send": "button[aria-label='Send message'], button[aria-label='Send Message']",
+    "reply": "div[data-is-streaming], .font-claude-message"
+  }
+}

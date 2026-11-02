@@ -1,0 +1,227 @@
+.titlebar {
+  height: var(--titlebar-h);
+  flex-shrink: 0;
+  -webkit-app-region: drag;
+  position: relative;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+/* Subtle warm halo bleeding up from the chat surface. */
+.titlebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 200% at 50% 100%,
+    var(--accent-soft) 0%,
+    transparent 55%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+[data-theme="light"] .titlebar::before {
+  opacity: 0.5;
+}
+
+.titlebar-left {
+  width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  /* macOS reserves 78px for the traffic-light buttons that overlay the title
+     bar. On Windows we render our own controls on the right, so the left
+     gutter shrinks down to a normal pad. */
+  padding-left: 78px;
+  -webkit-app-region: drag;
+}
+
+[data-platform="win"] .titlebar-left {
+  padding-left: 14px;
+}
+
+
+.titlebar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  -webkit-app-region: drag;
+}
+
+.titlebar-right {
+  min-width: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 14px;
+  gap: 8px;
+  -webkit-app-region: drag;
+}
+
+.titlebar-cost {
+  -webkit-app-region: no-drag;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+.titlebar-cost.local {
+  color: var(--success);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.titlebar-cost.cloud {
+  color: var(--orb-blue);
+  background: rgba(90, 156, 255, 0.1);
+}
+
+.titlebar-cost.warn {
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.titlebar-presets-btn {
+  -webkit-app-region: no-drag;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-base);
+  color: var(--text-dim);
+  transition: all 0.15s;
+}
+
+.titlebar-presets-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+}
+
+.titlebar-logo-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.titlebar-presets-btn:hover .titlebar-logo-icon {
+  opacity: 1;
+}
+
+/* ── Pill Tabs ── */
+.titlebar-tabs {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.titlebar-tab {
+  padding: 5px 20px;
+  border-radius: 9999px;
+  font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.titlebar-tab:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+.titlebar-tab.active {
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 2px 8px var(--accent-glow), 0 0 1px var(--accent-glow);
+}
+
+/* ── Windows-only window controls ──────────────────────────────────────── */
+.titlebar-winctl {
+  display: none;
+}
+
+[data-platform="win"] .titlebar-winctl {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  margin-left: 8px;
+  margin-right: -14px; /* eat the parent's right padding so the close button hits the corner */
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-winctl-btn {
+  width: 44px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.titlebar-winctl-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.titlebar-winctl-btn.close:hover {
+  background: #e81123; /* Win11 close-button red */
+  color: #fff;
+}
+
+[data-theme="light"] .titlebar-winctl-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Persistent settings gear in the title bar (moved out of the panel list). */
+.titlebar-icon-btn {
+  -webkit-app-region: no-drag;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  transition: all 0.15s;
+}
+.titlebar-icon-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+}
+.titlebar-icon-btn svg { opacity: 0.7; transition: opacity 0.15s; }
+.titlebar-icon-btn:hover svg { opacity: 1; }
+
+/* Sharing mode toggle: lit in the pair gradient while the mode is on. */
+.titlebar-share-btn.active {
+  color: #ff7a6e;
+  background: linear-gradient(135deg, rgba(255, 95, 162, 0.16), rgba(255, 154, 60, 0.16));
+  box-shadow: 0 0 0 1px rgba(255, 122, 110, 0.35), 0 0 12px rgba(255, 95, 162, 0.35);
+}
+.titlebar-share-btn.active svg { opacity: 1; }
+
+/* Quiet role identity: just the dot; name on hover via title. */
+

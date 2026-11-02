@@ -1,0 +1,42 @@
+{
+  "app": "Mail",
+  "aliases": [
+    "apple mail"
+  ],
+  "bundle_ids": [
+    "com.apple.mail"
+  ],
+  "process_names": [
+    "Mail"
+  ],
+  "transports": [
+    "bridge",
+    "url",
+    "accessibility",
+    "clipboard"
+  ],
+  "bridge": "Mail",
+  "url_actions": [
+    {
+      "id": "compose",
+      "description": "Open a new email draft with recipient, subject and body prefilled.",
+      "template": "mailto:{{to}}?subject={{subject}}&body={{body}}",
+      "args": [
+        {
+          "name": "to",
+          "description": "recipient email"
+        },
+        {
+          "name": "subject",
+          "description": "subject",
+          "required": false
+        },
+        {
+          "name": "body",
+          "description": "body text",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

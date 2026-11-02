@@ -1,0 +1,31 @@
+# Paths left out of the public snapshot built by scripts/prepare-public-release.sh.
+# One entry per line. A trailing slash excludes a directory tree, a * makes
+# a glob, anything else is an exact path relative to the repository root.
+
+# Private companions (own repositories, not part of the first release)
+orbixcore-ios/
+auth-proxy/
+research/
+
+# Assistant and editor state
+.claude/
+.vscode/
+CLAUDE.md
+
+# Internal planning, scoping, and papers
+FABLE_BRIDGE_AND_HANDOFF.md
+FABLE_UI_REFACTOR.md
+ORBIX_REFACTOR_SCOPE.md
+OrbixCore_Technical_Documentation_v2.md
+OrbixCore_Technical_Paper.md
+OrbixCore_Technical_Paper_v2.md
+build_pdf.py
+build_paper_pdf.py
+feedback-*.md
+docs/ADAPTIVE_MODELS_RESEARCH.md
+
+# Older developer reference; superseded by docs/architecture.md until it is re-verified
+orbixcore/TECHNICAL_DOCUMENTATION.md
+
+# Session handoff notes (internal)
+HANDOFF-*.md

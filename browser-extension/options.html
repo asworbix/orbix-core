@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Send to Orbix - Options</title>
+  <style>
+    body {
+      font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #17121a;
+      color: #f2eef4;
+      max-width: 560px;
+      margin: 48px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      font-size: 18px;
+      background: linear-gradient(90deg, #ff4d9d, #ff8a3d);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    p { color: #b8aec0; font-size: 13px; }
+    label { display: block; font-size: 12px; font-weight: 600; margin: 18px 0 6px; }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px 11px;
+      font: 13px ui-monospace, Menlo, monospace;
+      color: #f2eef4;
+      background: #241c29;
+      border: 1px solid #3a2f40;
+      border-radius: 8px;
+      outline: none;
+    }
+    input:focus { border-color: #ff4d9d; }
+    button {
+      margin-top: 18px;
+      margin-right: 8px;
+      padding: 9px 16px;
+      font: 600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #fff;
+      background: linear-gradient(90deg, #ff4d9d, #ff8a3d);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button.secondary { background: #3a2f40; }
+    #status { margin-top: 14px; font-size: 13px; min-height: 20px; }
+    .ok { color: #7ddc96; }
+    .err { color: #ff7d7d; }
+  </style>
+</head>
+<body>
+  <h1>Send to Orbix</h1>
+  <p>
+    Select a plan in Claude.ai or Copilot and ship it to Orbix Core for
+    free local execution. Turn on the endpoint in
+    Orbix Settings &gt; Models, then paste the token here. Everything
+    stays on your Mac.
+  </p>
+  <label for="appUrl">Orbix app URL</label>
+  <input id="appUrl" placeholder="http://127.0.0.1:51231" spellcheck="false" />
+  <label for="token">Endpoint token</label>
+  <input id="token" placeholder="orbx-..." spellcheck="false" />
+  <div>
+    <button id="save">Save</button>
+    <button id="test" class="secondary">Test connection</button>
+  </div>
+  <div id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>

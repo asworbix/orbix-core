@@ -1,0 +1,70 @@
+{
+  "app": "Notes",
+  "display_name": "Notes",
+  "aliases": ["notes", "apple notes"],
+  "process_name": "Notes",
+  "bundle_paths": ["/System/Applications/Notes.app", "/Applications/Notes.app"],
+  "probe": [
+    "tell application \"Notes\"",
+    "  return \"ok|\" & (count of folders) & \" folder(s)\"",
+    "end tell"
+  ],
+  "actions": [
+    {
+      "id": "recent_notes",
+      "description": "Most recently modified notes: title and modification time.",
+      "args": [
+        { "name": "limit", "kind": "int", "default": 10, "min": 1, "max": 50 }
+      ],
+      "returns": { "kind": "records", "columns": ["title", "modified"], "sort_column": "modified", "sort_desc": true, "limit_arg": "limit" },
+      "timeout_secs": 60,
+      "script": [
+        "tell application \"Notes\"",
+        "  set noteNames to name of every note",
+        "  set noteDates to modification date of every note",
+        "  set out to \"\"",
+        "  set n to count of noteNames",
+        "  repeat with i from 1 to n",
+        "    set out to out & (item i of noteNames) & fsep & ((item i of noteDates) as «class isot» as string) & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    },
+    {
+      "id": "search_notes",
+      "description": "Notes whose title contains the query text.",
+      "args": [
+        { "name": "query", "kind": "string" }
+      ],
+      "returns": { "kind": "records", "columns": ["title", "modified"], "sort_column": "modified", "sort_desc": true },
+      "timeout_secs": 60,
+      "script": [
+        "tell application \"Notes\"",
+        "  set hits to (every note whose name contains \"{{query}}\")",
+        "  set out to \"\"",
+        "  repeat with nt in hits",
+        "    set out to out & (name of nt) & fsep & ((modification date of nt) as «class isot» as string) & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    },
+    {
+      "id": "note_body",
+      "description": "Plain-text body of the first note whose title contains the given text.",
+      "args": [
+        { "name": "title", "kind": "string" }
+      ],
+      "returns": { "kind": "text" },
+      "timeout_secs": 30,
+      "script": [
+        "tell application \"Notes\"",
+        "  set hits to (every note whose name contains \"{{title}}\")",
+        "  if (count of hits) is 0 then return \"\"",
+        "  return plaintext of item 1 of hits",
+        "end tell"
+      ]
+    }
+  ]
+}

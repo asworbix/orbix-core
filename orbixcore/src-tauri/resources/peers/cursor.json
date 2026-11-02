@@ -1,0 +1,43 @@
+{
+  "app": "Cursor",
+  "aliases": [
+    "cursor editor",
+    "cursor ide"
+  ],
+  "bundle_ids": [
+    "com.todesktop.230313mzl4w4u92"
+  ],
+  "process_names": [
+    "Cursor"
+  ],
+  "transports": [
+    "mcp",
+    "accessibility",
+    "clipboard"
+  ],
+  "mcp": {
+    "config_path": "~/.cursor/mcp.json",
+    "config_path_windows": "%USERPROFILE%\\.cursor\\mcp.json",
+    "servers_key": "mcpServers",
+    "restart_required": false
+  },
+  "bob_line": "Cursor can now call me from its agent: files, apps, workflows, memory.",
+  "url_actions": [
+    {
+      "id": "open_file",
+      "description": "Open a file or folder in Cursor by absolute path (optionally at a line).",
+      "template": "cursor://file{{path}}:{{line}}",
+      "args": [
+        {
+          "name": "path",
+          "description": "absolute path, e.g. /Users/me/project/src/main.rs"
+        },
+        {
+          "name": "line",
+          "description": "line number",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

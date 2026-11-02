@@ -1,0 +1,26 @@
+{
+  "app": "GitHub Desktop",
+  "aliases": [
+    "github"
+  ],
+  "bundle_ids": [
+    "com.github.GitHubClient"
+  ],
+  "process_names": [
+    "GitHub Desktop",
+    "GitHubDesktop"
+  ],
+  "transports": [
+    "service",
+    "mcp_server",
+    "accessibility",
+    "clipboard"
+  ],
+  "service": "github",
+  "mcp_server": {
+    "name": "GitHub",
+    "transport": "http",
+    "url": "https://api.githubcopilot.com/mcp/",
+    "bearer_from_service": "github"
+  }
+}

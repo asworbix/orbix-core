@@ -1,0 +1,93 @@
+/* ── Generated documents panel ── */
+
+.doc-card {
+  padding: 12px;
+  margin-bottom: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.doc-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-kind {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  color: #fff;
+}
+.doc-kind.docx { background: var(--info); }
+.doc-kind.pptx { background: var(--error); }
+.doc-kind.html { background: var(--success); }
+.doc-kind.website { background: var(--accent); }
+
+.doc-info { display: flex; flex-direction: column; min-width: 0; }
+.doc-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.doc-meta { font-size: var(--text-2xs); color: var(--text-muted); }
+
+.doc-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.doc-editor {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doc-editor-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.doc-editor-row .form-label { margin: 0; }
+
+.doc-editor-section {
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doc-editor-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.doc-editor-section-head .form-input { flex: 1; }
+
+.doc-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.doc-editor-hint {
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}

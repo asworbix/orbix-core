@@ -1,0 +1,222 @@
+/* ── Suggestions Panel ───────────────────────── */
+
+.sugg-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sugg-tabs button {
+  padding: 10px 14px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  position: relative;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sugg-tabs button:hover { color: var(--text-secondary); }
+
+.sugg-tabs button.active {
+  color: var(--text-primary);
+}
+
+.sugg-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.sugg-tab-count {
+  font-size: var(--text-2xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+}
+
+.sugg-badge {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: #fff;
+  margin-left: 6px;
+}
+
+/* ── Suggestion Card ─────────────────────────── */
+
+.sugg-card {
+  padding: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.sugg-card:hover {
+  border-color: var(--border-bright);
+}
+
+.sugg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sugg-category {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sugg-priority {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sugg-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.sugg-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.sugg-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── History Item ────────────────────────────── */
+
+.sugg-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.sugg-history-item:last-child {
+  border-bottom: none;
+}
+
+.sugg-category-mini {
+  font-size: var(--text-md);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.sugg-history-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sugg-history-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sugg-history-time {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}
+
+.sugg-status-badge {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.sugg-status-badge.accepted {
+  color: var(--success);
+  background: rgba(52,211,153,0.1);
+}
+
+.sugg-status-badge.dismissed {
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+}
+
+.sugg-status-badge.expired {
+  color: var(--warning);
+  background: rgba(251,191,36,0.1);
+}
+
+/* ── Settings ────────────────────────────────── */
+
+.sugg-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sugg-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 4px;
+  gap: 12px;
+}
+
+.sugg-setting-label {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sugg-setting-sub {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  margin-top: 2px;
+  display: block;
+}
+
+.sugg-setting-value {
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  color: var(--accent);
+  opacity: 0.8;
+}

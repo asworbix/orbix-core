@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "app": {
+    "windows": [
+      {
+        "title": "Orbix Core",
+        "width": 960,
+        "height": 720,
+        "minWidth": 640,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "transparent": true,
+        "shadow": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "acceptFirstMouse": true
+      }
+    ]
+  },
+  "bundle": {
+    "resources": [
+      "resources/modules/_sdk/orbix-sdk.ts"
+    ],
+    "externalBin": [
+      "binaries/orbix",
+      "binaries/bob",
+      "binaries/orbix-speak"
+    ],
+    "macOS": {
+      "entitlements": "entitlements.plist",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null,
+      "minimumSystemVersion": "13.0"
+    }
+  }
+}

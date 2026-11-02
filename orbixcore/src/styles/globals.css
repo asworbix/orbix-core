@@ -1,0 +1,277 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* ── Dark mode (default) - layered warm grey ──
+     A subtle linear gradient from a slightly lighter top to a cooler bottom
+     gives the app depth without noise. Solid base used as fallback wherever
+     a single colour is needed. */
+  --bg-base:        #1E1F22;
+  --bg-gradient:    linear-gradient(180deg, #2C2D30 0%, #1B1C1E 100%);
+  --bg-surface:     #26272A;
+  --bg-elevated:    #2E2F33;
+  --bg-elev:        #2E2F33; /* alias for components that reference --bg-elev */
+  --bg-overlay:     #34353A;
+  --bg-hover:       rgba(255,255,255,0.045);
+
+  --glass-bg:       rgba(38,39,42,0.78);
+  --glass-border:   rgba(255,255,255,0.06);
+  --glass-blur:     20px;
+
+  --border:         rgba(255,255,255,0.07);
+  --border-bright:  rgba(255,255,255,0.14);
+
+  --text-primary:   #E9E7E2;
+  --text:           #E9E7E2;            /* alias */
+  --text-secondary: #A8A6A1;
+  --text-muted:     #7A7872;
+  --text-dim:       #4F4E4A;
+
+  /* Warm clay/terracotta accent - works in both light & dark. */
+  --accent:         #D88B6E;
+  /* Space-separated channels so `rgba(var(--accent-rgb), 0.X)` works
+     and the whole UI follows the theme automatically. */
+  --accent-rgb:     216 139 110;
+  --accent-glow:    rgba(var(--accent-rgb), 0.22);
+  --accent-soft:    rgba(var(--accent-rgb), 0.10);
+
+  --orb-blue:       #5a9cff;
+  --orb-violet:     #a855f7;
+  --orb-pink:       #ec4899;
+  --orb-cyan:       #06b6d4;
+
+  --success:        #6BB87A;
+  --warning:        #E0B85F;
+  --error:          #E07A6E;
+  --danger:         var(--error);   /* alias: some components used --danger */
+  --info:           #5a9cff;
+
+  /* ── Type scale: the only font sizes components should use.
+     Floored at 10px - smaller text is illegible for many users. ── */
+  --text-2xs:       10px;
+  --text-xs:        11px;
+  --text-sm:        12px;
+  --text-base:      13px;
+  --text-md:        14px;
+  --text-lg:        15px;
+
+  --shadow:         0 2px 12px rgba(0,0,0,0.35);
+  --shadow-lg:      0 8px 32px rgba(0,0,0,0.45);
+
+  --radius-sm:      8px;
+  --radius-md:      12px;
+  --radius-lg:      18px;
+  --radius-xl:      22px;
+  --radius-2xl:     28px;
+  --radius-full:    9999px;
+
+  --font-body:      'Sora', -apple-system, sans-serif;
+  --font-mono:      'JetBrains Mono', monospace;
+
+  --pane-width:     420px;
+  --titlebar-h:     48px;
+  --sidebar-w:      48px;
+  --context-sidebar-w: 48px;
+}
+
+[data-theme="light"] {
+  /* ── Light mode - sand / paper / clay ── */
+  --bg-base:        #F4EEE2;
+  --bg-gradient:    linear-gradient(180deg, #F8F2E6 0%, #EFE7D5 100%);
+  --bg-surface:     #FBF6EC;
+  --bg-elevated:    #FFFFFF;
+  --bg-elev:        #FFFFFF;
+  --bg-overlay:     #F1EAD9;
+  --bg-hover:       rgba(74, 56, 38, 0.05);
+  --bg-primary:     #F4EEE2;
+
+  --glass-bg:       rgba(251, 246, 236, 0.85);
+  --glass-border:   rgba(74, 56, 38, 0.10);
+
+  --border:         rgba(74, 56, 38, 0.12);
+  --border-bright:  rgba(74, 56, 38, 0.22);
+
+  --text-primary:   #3A2F22;
+  --text:           #3A2F22;
+  --text-secondary: #6E5C45;
+  --text-muted:     #9A876D;
+  --text-dim:       #C4B79D;
+
+  --accent:         #B05A33;
+  --accent-rgb:     176 90 51;
+  --accent-glow:    rgba(var(--accent-rgb), 0.18);
+  --accent-soft:    rgba(var(--accent-rgb), 0.08);
+
+  --orb-blue:       #4671A8;
+  --orb-violet:     #8B5BB8;
+  --orb-pink:       #B85575;
+  --orb-cyan:       #2C8A98;
+
+  --success:        #4A8B5C;
+  --warning:        #B07530;
+  --error:          #B5483D;
+  --info:           #4671A8;
+
+  --shadow:         0 2px 12px rgba(74, 56, 38, 0.08);
+  --shadow-lg:      0 8px 32px rgba(74, 56, 38, 0.12);
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  font-family: var(--font-body);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  /* Smooth palette swap when toggling light/dark - only colour properties,
+     never layout, so resize stays jank-free. */
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+/* Make every flex container shrink-friendly so window resize never
+   pushes children past the viewport edge. */
+.app-root,
+.app-column,
+.main-layout,
+.main-content,
+.chat-history,
+.panel-body {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Reduce motion preference - disable infinite ambient loops. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Allow text selection in chat */
+.chat-history,
+.chat-history * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+}
+
+/* Keyboard focus rings - visible only for keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+textarea:focus-visible {
+  outline: none;
+}
+
+input, textarea {
+  font-family: var(--font-body);
+  outline: none;
+  border: none;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+/* Smooth scroll for panel bodies */
+.panel-body {
+  scroll-behavior: smooth;
+}
+
+/* ── Animations ────────────────────────────── */
+
+@keyframes orb-idle {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%       { transform: scale(1.015); filter: brightness(1.04); }
+}
+
+@keyframes orb-listening {
+  0%, 100% { transform: scale(1); }
+  25%       { transform: scale(1.035); }
+  75%       { transform: scale(0.975); }
+}
+
+@keyframes orb-thinking {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.03); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes orb-executing {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50%       { filter: brightness(1.15) saturate(1.3); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes fade-up {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.animate-fade-up { animation: fade-up 0.3s ease forwards; }
+.animate-slide-right { animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

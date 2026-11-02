@@ -1,0 +1,140 @@
+[package]
+name = "orbixcore"
+version = "0.1.0"
+description = "OrbixCore - Your AI. Running locally. Growing with you."
+authors = ["OrbixCore Team"]
+edition = "2021"
+
+[[bin]]
+name = "orbixcore"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api", "tray-icon", "image-png"] }
+tauri-plugin-shell = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-store = "2"
+# In-app updates: check a signed manifest, download + install, then relaunch.
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+reqwest = { version = "0.11", features = ["json", "stream"] }
+anyhow = "1"
+thiserror = "1"
+log = "0.4"
+env_logger = "0.10"
+# Redirect stderr to a support log file for Finder-launched .app builds
+# (init_logging in main.rs); dup2 needs a raw libc call.
+libc = "0.2"
+futures = "0.3"
+async-trait = "0.1"
+dirs = "5"
+# Phase 5 - connector authoring: AST scanner + signer
+tree-sitter = "0.22"
+tree-sitter-typescript = "0.21"
+ed25519-dalek = { version = "2", features = ["rand_core", "pkcs8"] }
+rand_core = { version = "0.6", features = ["std"] }
+# Used by bob_connector_author for the temp staging dir during LLM-driven
+# activation (was a dev-dep before; promoted because it's in prod code now).
+tempfile = "3"
+# Local SQLite write destination (bring-your-own-database). bundled compiles
+# SQLite from source so there is no system-library dependency.
+rusqlite = { version = "0.31", features = ["bundled"] }
+# Voice (Epic C)
+cpal = "0.15"
+hound = "3.5"
+rodio = "0.19"
+kokoro-micro = "1.0"
+whisper-rs = "0.16"
+# Memory encryption (Epic D)
+aes-gcm = "0.10"
+argon2 = "0.5"
+base64 = { version = "0.22" }
+rand = "0.8"
+# Local HTTP endpoint server (/v1 + /cli routes) + browser DevTools client
+warp = "0.3"
+tokio-tungstenite = "0.21"
+futures-util = "0.3"
+# Connectors (Epic U)
+pdf-extract = "0.7"
+regex = "1"
+# OAuth (PKCE flow) + audit log signing (compliance)
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+serde_yaml = "0.9"
+urlencoding = "2"
+url = "2"
+open = "5"
+# Browser (Epic F) - optional
+headless_chrome = { version = "1", optional = true }
+# File watcher - reload app data when external tools modify JSON files
+# (core-foundation stays under the macOS target table below)
+notify = "6"
+# LAN peer discovery: advertise this host's chat endpoint over mDNS so other
+# devices can find it with `orbix connect`. Pure Rust, no Bonjour dependency,
+# so the same code compiles on Windows.
+mdns-sd = "0.20"
+calamine = "0.36.0"
+tauri-plugin-global-shortcut = "=2.3.1"
+
+# ── Windows-only deps ──────────────────────────────────────────────────────
+# Window Intelligence (Epic H) uses UI Automation on Windows (replaces macOS Accessibility API).
+# Also used by screen_capture for browser URL detection.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_System_Com",
+    "Win32_UI_Accessibility",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_Graphics_Gdi",
+    "Win32_System_Threading",
+    "Win32_System_ProcessStatus",
+    "Win32_System_SystemInformation",
+    "Win32_Storage_FileSystem",
+    "Win32_Security_Cryptography",
+    "Win32_UI_Shell",
+    "Win32_System_Power",
+] }
+windows-core = "0.58"
+walkdir = "2"
+
+# ── macOS-only deps (kept so a `cargo check` from the mac repo against this manifest still works) ──
+[target.'cfg(target_os = "macos")'.dependencies]
+core-foundation = "0.10"
+# macOS Keychain access for the connector signing key (§12 #2: chosen Keychain)
+security-framework = "2"
+
+[dev-dependencies]
+tempfile = "3"
+
+[features]
+default = ["custom-protocol", "browser"]
+custom-protocol = ["tauri/custom-protocol"]
+browser = ["headless_chrome"]
+
+# espeak-rs-sys (pulled in by kokoro-micro) links msvcrtd when its build
+# script sees `cfg!(debug_assertions)` on Windows. That puts the debug and
+# the release C runtime into one exe, and the first file read through the
+# wrong one stops `tauri dev` on a "Debug Assertion Failed ...
+# _osfile(fh) & FOPEN" dialog (0x80000003 on Abort). Release builds never
+# had the flag. Scoped to this one package: a profile-wide build-override
+# breaks tauri-codegen, whose output depends on debug_assertions.
+[profile.dev.package.espeak-rs-sys]
+debug-assertions = false
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

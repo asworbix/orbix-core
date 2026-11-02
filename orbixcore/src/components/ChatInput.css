@@ -1,0 +1,448 @@
+.chat-input-wrap {
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+}
+
+/* ── Drag-and-drop ── */
+.chat-drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.chat-drop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 40px;
+  border-radius: 18px;
+  border: 2px dashed var(--accent);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  font-weight: 500;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+}
+.chat-drop-card svg { color: var(--accent); }
+
+.chat-attach-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.chat-attach-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 220px;
+  padding: 4px 6px 4px 9px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.chat-attach-chip svg { color: var(--accent); flex-shrink: 0; }
+
+.chat-vision-hint {
+  margin-bottom: 8px;
+  padding: 7px 10px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-elevated));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  border-radius: 8px;
+}
+.chat-attach-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-attach-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.chat-attach-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.chat-input-bar {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 18px 8px;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.chat-input-bar:focus-within {
+  border-color: rgba(var(--accent-rgb), 0.4);
+  background: var(--bg-elevated);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.08);
+}
+
+.chat-input-bar.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.chat-scope-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.chat-scope-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 9999px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  animation: chat-scope-rise 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes chat-scope-rise {
+  from { transform: translateY(2px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+.chat-scope-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.chat-scope-prefix {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.chat-scope-name {
+  letter-spacing: 0.005em;
+}
+
+.chat-scope-close {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--text-md);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.chat-scope-close:hover {
+  background: rgba(var(--accent-rgb), 0.18);
+  color: var(--text-primary);
+}
+
+/* Repo scope chip (/repo) - same silhouette, git-branch identity. */
+.chat-scope-chip.repo {
+  background: var(--bg-elevated);
+  border-color: var(--border-bright);
+}
+.chat-scope-chip.repo svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.chat-scope-branch {
+  font-size: var(--text-2xs, 10px);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 1px 7px;
+}
+
+.chat-input {
+  font-size: var(--text-md);
+  color: var(--text-primary);
+  background: transparent;
+  outline: none;
+  border: none;
+  caret-color: var(--accent);
+  font-weight: 400;
+  line-height: 1.5;
+  resize: none;
+  min-height: 22px;
+  font-family: var(--font-body);
+  overflow-y: hidden;
+  scroll-padding-bottom: 4px;
+  width: 100%;
+}
+
+.chat-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.chat-input-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+}
+
+.input-hints {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.input-hint {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-input-bar:focus-within .input-hint {
+  opacity: 1;
+}
+
+/* Compact model selector lives in the input footer.
+   Keep it short and quiet; let it pop on hover. */
+.input-hints .model-selector-compact {
+  flex-shrink: 0;
+}
+
+/* ── Input Action Buttons ────────────────── */
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.imagine-launch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.imagine-launch-btn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.mic-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.mic-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.mic-btn.recording {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
+}
+
+.mic-btn.recording:hover {
+  background: color-mix(in srgb, var(--error) 22%, transparent);
+}
+
+/* Pulsing ring around mic when recording */
+.mic-pulse {
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-md);
+  border: 2px solid color-mix(in srgb, var(--error) 50%, transparent);
+  animation: mic-pulse-ring 1.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mic-pulse-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(1.1); }
+}
+
+.send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.send-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.30);
+}
+
+.send-btn.active:hover {
+  background: color-mix(in srgb, var(--accent) 85%, #000);
+}
+
+.spin {
+  animation: orb-thinking 1s linear infinite;
+}
+
+/* ── Slash Command Menu ────────────────────── */
+
+.slash-menu {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: fade-up 0.15s ease forwards;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.slash-menu-header {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 10px 4px;
+}
+
+.slash-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.slash-item:hover,
+.slash-item.active {
+  background: var(--accent-soft);
+}
+
+.slash-item-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.slash-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.slash-item-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.slash-item-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Voice conversation live indicator ── */
+.voice-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-2xs);
+  color: var(--text-dim);
+}
+
+.voice-level-bar {
+  width: 100px;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.voice-level-fill {
+  height: 100%;
+  background: var(--text-dim);
+  border-radius: 2px;
+  transition: width 0.05s linear, background 0.2s;
+}
+
+.voice-level-fill.active {
+  background: linear-gradient(90deg, var(--success), var(--accent));
+}
+
+.voice-phase-label {
+  font-family: var(--font-mono);
+  text-transform: lowercase;
+  letter-spacing: 0.3px;
+}

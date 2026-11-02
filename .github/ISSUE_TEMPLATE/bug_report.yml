@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in Orbix Core does not work the way it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+      placeholder: |
+        1. Opened Settings > Models and picked Gemma 4 E4B
+        2. Asked Bob "what is on my calendar today"
+        3. Expected the events, got "That did not work"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Orbix Core version
+      description: Settings > About, or the DMG name.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - Windows
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: machine
+    attributes:
+      label: Machine
+      description: Chip or CPU, memory, OS version.
+      placeholder: M2 Pro, 16 GB, macOS 15.1
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Local model in use
+      placeholder: Gemma 4 E4B (Q4_K_M)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Anything from the developer drawer, the terminal (`npm run tauri dev`), or Console.app. Remove anything private first.
+      render: text

@@ -1,0 +1,57 @@
+{
+  "app": "Slack",
+  "aliases": [
+    "slack desktop"
+  ],
+  "bundle_ids": [
+    "com.tinyspeck.slackmacgap"
+  ],
+  "process_names": [
+    "Slack",
+    "slack"
+  ],
+  "transports": [
+    "service",
+    "accessibility",
+    "clipboard"
+  ],
+  "service": "slack",
+  "url_actions": [
+    {
+      "id": "open_channel",
+      "description": "Open a channel or DM by id (team and channel ids come from the Slack API: conversations.list).",
+      "template": "slack://channel?team={{team}}&id={{channel}}",
+      "args": [
+        {
+          "name": "team",
+          "description": "workspace/team id, e.g. T0123"
+        },
+        {
+          "name": "channel",
+          "description": "channel or DM id, e.g. C0456"
+        }
+      ]
+    },
+    {
+      "id": "open_person",
+      "description": "Open a direct message with a person by user id.",
+      "template": "slack://user?team={{team}}&id={{user}}",
+      "args": [
+        {
+          "name": "team",
+          "description": "workspace/team id"
+        },
+        {
+          "name": "user",
+          "description": "user id, e.g. U0789"
+        }
+      ]
+    },
+    {
+      "id": "open_slack",
+      "description": "Bring Slack to the front.",
+      "template": "slack://open",
+      "args": []
+    }
+  ]
+}

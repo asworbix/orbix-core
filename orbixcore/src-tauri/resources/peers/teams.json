@@ -1,0 +1,68 @@
+{
+  "app": "Microsoft Teams",
+  "aliases": [
+    "teams",
+    "ms teams"
+  ],
+  "bundle_ids": [
+    "com.microsoft.teams2",
+    "com.microsoft.teams"
+  ],
+  "process_names": [
+    "Microsoft Teams",
+    "MSTeams",
+    "ms-teams",
+    "Teams"
+  ],
+  "transports": [
+    "service",
+    "accessibility",
+    "clipboard"
+  ],
+  "service": "microsoft",
+  "url_actions": [
+    {
+      "id": "chat",
+      "description": "Start or open a chat with people (comma-separated emails) with a message prefilled.",
+      "template": "msteams://teams.microsoft.com/l/chat/0/0?users={{users}}&message={{message}}",
+      "args": [
+        {
+          "name": "users",
+          "description": "email addresses, comma-separated"
+        },
+        {
+          "name": "message",
+          "description": "text to prefill",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "new_meeting",
+      "description": "Open a new meeting form with a subject and optional attendees.",
+      "template": "msteams://teams.microsoft.com/l/meeting/new?subject={{subject}}&attendees={{attendees}}",
+      "args": [
+        {
+          "name": "subject",
+          "description": "meeting title"
+        },
+        {
+          "name": "attendees",
+          "description": "emails, comma-separated",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "call",
+      "description": "Start a call with people (comma-separated emails).",
+      "template": "msteams://teams.microsoft.com/l/call/0/0?users={{users}}",
+      "args": [
+        {
+          "name": "users",
+          "description": "email addresses"
+        }
+      ]
+    }
+  ]
+}

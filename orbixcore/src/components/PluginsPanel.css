@@ -1,0 +1,115 @@
+/* ── Plugins Panel ───────────────────────────── */
+
+.plug-card {
+  padding: 12px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.plug-card:hover { border-color: var(--border-bright); }
+
+.plug-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.plug-card-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.plug-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.plug-card-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.plug-card-author {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}
+
+.plug-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.plug-card-desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── Plugin Detail ───────────────────────────── */
+
+.plug-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.plug-detail-desc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.plug-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.plug-error {
+  font-size: var(--text-sm);
+  color: var(--error);
+  padding: 8px 12px;
+  background: rgba(248,113,113,0.06);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+
+.plug-no-perms {
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+  padding: 8px 4px;
+}
+
+.plug-perm-granted {
+  font-size: var(--text-xs);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.plug-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}

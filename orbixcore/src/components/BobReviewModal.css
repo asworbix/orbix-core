@@ -1,0 +1,308 @@
+.bob-review-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bob-overlay-in 0.2s ease-out;
+}
+
+@keyframes bob-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.bob-review-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.bob-review-modal {
+  position: relative;
+  width: 92%;
+  max-width: 540px;
+  max-height: 80vh;
+  background: var(--bg-base);
+  border: 1px solid var(--border-bright);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(var(--accent-rgb),0.06);
+  animation: bob-modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bob-modal-in {
+  from { transform: scale(0.92) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Accent bar */
+.bob-review-accent {
+  height: 3px;
+  flex-shrink: 0;
+}
+
+/* Header */
+.bob-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px;
+  flex-shrink: 0;
+}
+
+.bob-review-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bob-review-badge {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.bob-review-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bob-review-close {
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bob-review-close:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.08);
+}
+
+/* Summary */
+.bob-review-summary {
+  padding: 0 18px 10px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Body */
+.bob-review-body {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 120px;
+  max-height: 320px;
+}
+
+.bob-review-content {
+  padding: 14px 16px;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  word-break: break-word;
+  line-height: 1.65;
+  margin: 0;
+  overflow-y: auto;
+  max-height: 360px;
+}
+
+.bob-review-content p {
+  margin: 0 0 10px;
+}
+
+.bob-review-content p:last-child {
+  margin-bottom: 0;
+}
+
+.bob-review-content strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bob-review-content em {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.bob-review-content ul,
+.bob-review-content ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.bob-review-content li {
+  margin: 4px 0;
+}
+
+.bob-review-content h1,
+.bob-review-content h2,
+.bob-review-content h3 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 14px 0 6px;
+}
+
+.bob-review-content h1 { font-size: 16px; }
+.bob-review-content h2 { font-size: var(--text-md); }
+.bob-review-content h3 { font-size: var(--text-base); }
+
+.bob-review-content code {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: var(--text-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent);
+}
+
+.bob-review-content pre {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  overflow-x: auto;
+}
+
+.bob-review-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.bob-review-content a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.bob-review-content a:hover { text-decoration: underline; }
+
+.bob-review-editor {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  font-size: var(--text-sm);
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  line-height: 1.6;
+}
+
+/* Files */
+.bob-review-files {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 18px 0;
+}
+
+.bob-review-files-label {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bob-review-file {
+  font-size: var(--text-2xs);
+  font-family: 'SF Mono', 'Menlo', monospace;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Actions */
+.bob-review-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  flex-shrink: 0;
+}
+
+.bob-review-actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+.bob-review-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+}
+
+.bob-review-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.bob-review-btn.edit {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.bob-review-btn.edit:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+}
+
+.bob-review-btn.decline {
+  background: transparent;
+  color: var(--error);
+  border-color: rgba(248,113,113,0.2);
+}
+
+.bob-review-btn.decline:hover {
+  background: rgba(248,113,113,0.08);
+}
+
+.bob-review-btn.accept {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.bob-review-btn.accept:hover {
+  filter: brightness(1.1);
+}

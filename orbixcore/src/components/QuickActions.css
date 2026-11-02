@@ -1,0 +1,104 @@
+/* ── Quick Actions ────────────────────────── */
+
+.quick-actions-list {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fade-up 0.4s ease forwards;
+  animation-delay: 0.15s;
+  opacity: 0;
+  flex-shrink: 1;
+  overflow-y: auto;
+  max-height: 280px;
+}
+
+.quick-actions-header {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 4px 8px;
+}
+
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+  background: transparent;
+}
+
+.quick-action-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.quick-action-card:active {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(0.99);
+}
+
+.quick-action-card.running {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.quick-action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quick-action-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+
+.quick-action-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-action-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-action-meta {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.quick-action-chevron {
+  color: var(--text-dim);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.quick-action-card:hover .quick-action-chevron {
+  opacity: 1;
+}

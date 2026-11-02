@@ -1,0 +1,528 @@
+/* ═══════════════════════════════════════════════
+   OrbCore - alive, breathing orb with moods
+   ═══════════════════════════════════════════════ */
+
+/* ── Container ─────────────────────────────── */
+
+.orb-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  will-change: transform;
+  animation: orbFloat 8s cubic-bezier(.45,.05,.55,.95) infinite;
+  cursor: pointer;
+  transform: perspective(600px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.15s ease-out;
+}
+
+.orb-hovered {
+  filter: brightness(1.08);
+}
+
+/* ── Ambient Glow (outside sphere - no clipping) ── */
+
+.orb-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  clip-path: circle(50% at 50% 50%);
+  background: radial-gradient(circle,
+    rgba(80, 60, 220, 0.22) 0%,
+    rgba(100, 60, 200, 0.10) 30%,
+    rgba(120, 50, 180, 0.04) 50%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: glowPulse 7s ease-in-out infinite alternate;
+}
+
+.orb-glow-b {
+  width: 400px;
+  height: 400px;
+  clip-path: circle(50% at 50% 50%);
+  background: radial-gradient(circle,
+    rgba(60, 80, 240, 0.08) 0%,
+    rgba(100, 50, 200, 0.04) 35%,
+    transparent 60%);
+  animation: glowPulseB 9s ease-in-out infinite alternate-reverse;
+}
+
+/* ── Sphere (clips everything to a circle) ── */
+
+.orb-sphere {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border-radius: 50%;
+  overflow: hidden;
+  /* Triple-clip: mask-image (WebKit), clip-path (every modern engine),
+     and contain:paint so if ANY of them fails the others hold. The nebula
+     layers have mix-blend-mode: screen which can cause WebKit to bypass
+     mask-image and leak the square bounding box as magenta in light mode. */
+  -webkit-mask-image: radial-gradient(circle, #fff 100%, #000 100%);
+  clip-path: circle(50% at 50% 50%);
+  contain: paint;
+  z-index: 2;
+  background: radial-gradient(circle at 48% 52%,
+    #1a1045 0%,
+    #0f0a2e 40%,
+    #080518 75%,
+    #040210 100%);
+  animation: orbBreathe 6s ease-in-out infinite;
+}
+
+/* ── Nebula Layers ─────────────────────────── */
+
+.orb-nebula {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Layer A - primary colors, slow majestic rotation */
+.orb-nebula-a {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(50, 120, 255, 0.90) 0%, transparent 45%),
+    radial-gradient(circle at 70% 55%, rgba(200, 60, 160, 0.75) 0%, transparent 40%),
+    radial-gradient(circle at 45% 70%, rgba(120, 40, 220, 0.70) 0%, transparent 48%),
+    radial-gradient(circle at 60% 15%, rgba(80, 180, 255, 0.25) 0%, transparent 35%);
+  animation: nebulaA 22s linear infinite;
+}
+
+/* Layer B - counter-rotates, screen blend for luminous mix */
+.orb-nebula-b {
+  background:
+    radial-gradient(circle at 55% 40%, rgba(180, 50, 100, 0.50) 0%, transparent 38%),
+    radial-gradient(circle at 25% 65%, rgba(100, 40, 210, 0.55) 0%, transparent 42%),
+    radial-gradient(circle at 75% 30%, rgba(50, 110, 240, 0.45) 0%, transparent 38%);
+  mix-blend-mode: screen;
+  animation: nebulaB 28s linear infinite reverse;
+}
+
+/* Layer C - very slow drift, adds depth and organic feel */
+.orb-nebula-c {
+  inset: -30%;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(70, 160, 255, 0.30) 0%, transparent 40%),
+    radial-gradient(circle at 65% 60%, rgba(160, 80, 200, 0.25) 0%, transparent 35%);
+  mix-blend-mode: screen;
+  animation: nebulaC 35s linear infinite;
+  opacity: 0.7;
+}
+
+/* ── Inner Core Glow ───────────────────────── */
+
+.orb-inner-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(100, 80, 255, 0.12) 0%,
+    rgba(80, 60, 200, 0.06) 30%,
+    transparent 60%);
+  animation: innerGlow 5s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+/* ── Glass Specular Highlights ─────────────── */
+
+.orb-specular {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 3;
+  background:
+    /* Primary top-left highlight */
+    radial-gradient(ellipse 38% 28% at 26% 18%,
+      rgba(255, 255, 255, 0.50) 0%,
+      rgba(200, 220, 255, 0.12) 50%,
+      transparent 100%),
+    /* Subtle bottom-right reflection */
+    radial-gradient(ellipse 24% 16% at 74% 80%,
+      rgba(180, 150, 255, 0.06) 0%,
+      transparent 100%),
+    /* Bottom edge catch light */
+    radial-gradient(ellipse 50% 12% at 50% 95%,
+      rgba(120, 160, 255, 0.08) 0%,
+      transparent 100%),
+    /* Rim ring - glass edge refraction */
+    radial-gradient(ellipse 96% 96% at 50% 50%,
+      transparent 44%,
+      rgba(100, 140, 255, 0.10) 48%,
+      rgba(80, 120, 255, 0.03) 51%,
+      transparent 55%);
+  animation: specularDrift 10s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* ── Rim Light ─────────────────────────────── */
+
+.orb-rim {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow:
+    0 0 60px rgba(70, 50, 255, 0.18),
+    0 0 120px rgba(100, 50, 200, 0.08),
+    inset 0 0 30px rgba(100, 120, 255, 0.06),
+    inset 0 -2px 8px rgba(140, 100, 255, 0.08);
+}
+
+/* ═══════════════════════════════════════════════
+   Keyframes - organic, non-repeating feel
+   ═══════════════════════════════════════════════ */
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0); }
+  25%      { transform: translateY(-10px); }
+  50%      { transform: translateY(-4px); }
+  75%      { transform: translateY(-12px); }
+}
+
+@keyframes orbBreathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.022); }
+}
+
+@keyframes nebulaA {
+  0%   { transform: rotate(0deg)   translate(0%, 0%)   scale(1); }
+  25%  { transform: rotate(90deg)  translate(4%, -3%)  scale(1.05); }
+  50%  { transform: rotate(180deg) translate(-3%, 4%)  scale(0.96); }
+  75%  { transform: rotate(270deg) translate(3%, 2%)   scale(1.04); }
+  100% { transform: rotate(360deg) translate(0%, 0%)   scale(1); }
+}
+
+@keyframes nebulaB {
+  0%   { transform: rotate(0deg)   translate(0%, 0%)   scale(1);    opacity: 0.80; }
+  25%  { transform: rotate(90deg)  translate(-3%, 4%)  scale(1.04); opacity: 1; }
+  50%  { transform: rotate(180deg) translate(4%, -2%)  scale(0.95); opacity: 0.85; }
+  75%  { transform: rotate(270deg) translate(-2%, -3%) scale(1.06); opacity: 0.92; }
+  100% { transform: rotate(360deg) translate(0%, 0%)   scale(1);    opacity: 0.80; }
+}
+
+@keyframes nebulaC {
+  0%   { transform: rotate(0deg)   translate(0%, 0%); }
+  33%  { transform: rotate(120deg) translate(2%, -2%); }
+  66%  { transform: rotate(240deg) translate(-2%, 2%); }
+  100% { transform: rotate(360deg) translate(0%, 0%); }
+}
+
+@keyframes glowPulse {
+  0%   { opacity: 0.5;  transform: translate(-50%, -50%) scale(0.95); }
+  100% { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
+}
+
+@keyframes glowPulseB {
+  0%   { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes specularDrift {
+  0%   { transform: rotate(-4deg) translateX(-1px); opacity: 0.85; }
+  100% { transform: rotate(5deg)  translateX(1px);  opacity: 1; }
+}
+
+@keyframes innerGlow {
+  0%   { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════
+   State Moods - each state transforms the orb
+   ═══════════════════════════════════════════════ */
+
+/* ── Listening: alert, bright blues, faster breathing ── */
+
+.orb-state-listening .orb-sphere { animation-duration: 3s; }
+.orb-state-listening .orb-rim {
+  box-shadow:
+    0 0 70px rgba(40, 150, 255, 0.28),
+    0 0 140px rgba(60, 100, 240, 0.12),
+    inset 0 0 30px rgba(60, 140, 255, 0.08);
+}
+.orb-state-listening .orb-nebula-a { animation-duration: 12s; }
+.orb-state-listening .orb-nebula-b { animation-duration: 16s; }
+.orb-state-listening .orb-nebula-c { animation-duration: 20s; }
+.orb-state-listening .orb-glow {
+  background: radial-gradient(circle,
+    rgba(40, 140, 255, 0.28) 0%,
+    rgba(60, 120, 240, 0.12) 30%,
+    transparent 60%);
+}
+
+/* ── Thinking: contemplative purples, medium pace ── */
+
+.orb-state-thinking .orb-sphere { animation-duration: 4s; }
+.orb-state-thinking .orb-rim {
+  box-shadow:
+    0 0 70px rgba(130, 60, 240, 0.28),
+    0 0 140px rgba(160, 50, 200, 0.12),
+    inset 0 0 30px rgba(130, 60, 240, 0.08);
+}
+.orb-state-thinking .orb-nebula-a { animation-duration: 14s; }
+.orb-state-thinking .orb-nebula-b { animation-duration: 18s; }
+.orb-state-thinking .orb-nebula-c { animation-duration: 24s; }
+.orb-state-thinking .orb-glow {
+  background: radial-gradient(circle,
+    rgba(130, 60, 240, 0.25) 0%,
+    rgba(150, 50, 200, 0.10) 30%,
+    transparent 60%);
+}
+
+/* ── Executing: energetic warm tones, fast movement ── */
+
+.orb-state-executing .orb-sphere { animation-duration: 2s; }
+.orb-state-executing .orb-rim {
+  box-shadow:
+    0 0 70px rgba(255, 130, 40, 0.25),
+    0 0 140px rgba(240, 70, 80, 0.10),
+    inset 0 0 30px rgba(255, 130, 40, 0.08);
+}
+.orb-state-executing .orb-nebula-a {
+  animation-duration: 8s;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 150, 50, 0.90) 0%, transparent 45%),
+    radial-gradient(circle at 70% 55%, rgba(240, 60, 100, 0.80) 0%, transparent 40%),
+    radial-gradient(circle at 45% 70%, rgba(200, 50, 160, 0.70) 0%, transparent 48%),
+    radial-gradient(circle at 60% 15%, rgba(255, 120, 60, 0.30) 0%, transparent 35%);
+}
+.orb-state-executing .orb-nebula-b {
+  animation-duration: 10s;
+  background:
+    radial-gradient(circle at 55% 40%, rgba(255, 80, 60, 0.50) 0%, transparent 38%),
+    radial-gradient(circle at 25% 65%, rgba(200, 50, 120, 0.50) 0%, transparent 42%),
+    radial-gradient(circle at 75% 30%, rgba(255, 140, 50, 0.45) 0%, transparent 38%);
+}
+.orb-state-executing .orb-nebula-c {
+  animation-duration: 14s;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 160, 80, 0.30) 0%, transparent 40%),
+    radial-gradient(circle at 65% 60%, rgba(240, 80, 120, 0.25) 0%, transparent 35%);
+}
+.orb-state-executing .orb-glow {
+  background: radial-gradient(circle,
+    rgba(255, 120, 40, 0.22) 0%,
+    rgba(240, 70, 80, 0.08) 30%,
+    transparent 60%);
+}
+
+/* ── Learning: calm teals, steady flow ── */
+
+.orb-state-learning .orb-sphere { animation-duration: 5s; }
+.orb-state-learning .orb-rim {
+  box-shadow:
+    0 0 70px rgba(40, 200, 170, 0.25),
+    0 0 140px rgba(50, 150, 220, 0.10),
+    inset 0 0 30px rgba(40, 200, 170, 0.08);
+}
+.orb-state-learning .orb-nebula-a {
+  animation-duration: 18s;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(40, 210, 170, 0.85) 0%, transparent 45%),
+    radial-gradient(circle at 70% 55%, rgba(50, 140, 240, 0.70) 0%, transparent 40%),
+    radial-gradient(circle at 45% 70%, rgba(80, 80, 220, 0.65) 0%, transparent 48%),
+    radial-gradient(circle at 60% 15%, rgba(60, 200, 200, 0.25) 0%, transparent 35%);
+}
+.orb-state-learning .orb-nebula-b {
+  animation-duration: 22s;
+  background:
+    radial-gradient(circle at 55% 40%, rgba(40, 180, 160, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 25% 65%, rgba(60, 120, 220, 0.50) 0%, transparent 42%),
+    radial-gradient(circle at 75% 30%, rgba(50, 200, 180, 0.40) 0%, transparent 38%);
+}
+.orb-state-learning .orb-nebula-c {
+  animation-duration: 28s;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(50, 200, 190, 0.30) 0%, transparent 40%),
+    radial-gradient(circle at 65% 60%, rgba(60, 160, 220, 0.25) 0%, transparent 35%);
+}
+.orb-state-learning .orb-glow {
+  background: radial-gradient(circle,
+    rgba(40, 200, 170, 0.22) 0%,
+    rgba(50, 150, 220, 0.08) 30%,
+    transparent 60%);
+}
+
+/* ── Error: agitated reds, faster pulse ── */
+
+.orb-state-error .orb-sphere { animation-duration: 2.5s; }
+.orb-state-error .orb-rim {
+  box-shadow:
+    0 0 70px rgba(240, 60, 60, 0.30),
+    0 0 140px rgba(200, 40, 80, 0.12),
+    inset 0 0 30px rgba(240, 60, 60, 0.08);
+}
+.orb-state-error .orb-nebula-a {
+  animation-duration: 10s;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(240, 60, 60, 0.85) 0%, transparent 45%),
+    radial-gradient(circle at 70% 55%, rgba(200, 40, 80, 0.75) 0%, transparent 40%),
+    radial-gradient(circle at 45% 70%, rgba(150, 30, 60, 0.70) 0%, transparent 48%),
+    radial-gradient(circle at 60% 15%, rgba(240, 90, 90, 0.25) 0%, transparent 35%);
+}
+.orb-state-error .orb-nebula-b {
+  animation-duration: 12s;
+  background:
+    radial-gradient(circle at 55% 40%, rgba(220, 50, 50, 0.50) 0%, transparent 38%),
+    radial-gradient(circle at 25% 65%, rgba(180, 30, 80, 0.50) 0%, transparent 42%),
+    radial-gradient(circle at 75% 30%, rgba(200, 60, 60, 0.40) 0%, transparent 38%);
+}
+.orb-state-error .orb-nebula-c {
+  animation-duration: 16s;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(240, 80, 80, 0.30) 0%, transparent 40%),
+    radial-gradient(circle at 65% 60%, rgba(200, 50, 80, 0.25) 0%, transparent 35%);
+}
+.orb-state-error .orb-glow {
+  background: radial-gradient(circle,
+    rgba(240, 60, 60, 0.25) 0%,
+    rgba(200, 40, 80, 0.10) 30%,
+    transparent 60%);
+}
+
+/* ── Label ─────────────────────────────────── */
+
+.orb-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  color: rgba(160, 140, 255, 0.9);
+  margin-top: 24px;
+  animation: labelFadeUp 0.4s ease forwards;
+  z-index: 4;
+}
+
+.orb-label-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(160, 140, 255, 0.9);
+  animation: labelBlink 1.5s ease infinite;
+  flex-shrink: 0;
+}
+
+@keyframes labelFadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 0.7; transform: translateY(0); }
+}
+
+@keyframes labelBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+/* ═══════════════════════════════════════════════
+   Reactive Features (Epic O)
+   ═══════════════════════════════════════════════ */
+
+/* ── Ambient Time-of-Day Tint ────────────── */
+
+.orb-ambient-tint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* ── Click Ripple ─────────────────────────── */
+
+.orb-ripple {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: orbRipple 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes orbRipple {
+  0%   { width: 0; height: 0; opacity: 1; }
+  100% { width: 200px; height: 200px; opacity: 0; }
+}
+
+/* ── Amplitude Ring ───────────────────────── */
+
+.orb-amp-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 2px solid rgba(100, 140, 255, 0.3);
+  box-shadow: 0 0 20px rgba(100, 140, 255, 0.15);
+  pointer-events: none;
+  z-index: 4;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+
+/* ── Pairing Beacon Ring ──────────────────── */
+
+.orb-pairing-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 5;
+  pointer-events: none;
+  animation: pairingRingSpin 8s linear infinite;
+}
+
+.orb-pairing-segment {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform-origin: center center;
+  box-shadow: 0 0 6px currentColor;
+}
+
+@keyframes pairingRingSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Amplitude-Responsive Sphere ──────────── */
+
+.orb-state-listening .orb-sphere,
+.orb-state-executing .orb-sphere {
+  transform: scale(var(--amp-scale, 1));
+  transition: transform 0.08s ease-out;
+}
+
+.orb-state-listening .orb-rim,
+.orb-state-executing .orb-rim {
+  transition: box-shadow 0.1s ease-out;
+}

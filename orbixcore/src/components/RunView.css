@@ -1,0 +1,312 @@
+/* ── RunView - chat-first surface ── */
+
+.run-view {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+/* ── Thin status header ────────────────────── */
+.run-header {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  gap: 12px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.run-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.run-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.run-status-dot.active {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+  animation: run-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes run-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.run-status-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.run-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.run-header-pill {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.run-header-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+
+/* ── Scroll area ──────────────────────────── */
+.run-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Empty state - Claude-like greeting ──── */
+.run-empty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px 80px;
+  text-align: center;
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.run-empty-mark {
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent);
+  margin-bottom: 4px;
+  text-shadow: 0 0 32px var(--accent-glow);
+}
+
+.run-empty-title {
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.run-empty-sub {
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.run-empty-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.run-empty-chip {
+  padding: 7px 14px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.run-empty-chip:hover {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.run-empty-workflows {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.run-empty-section-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.run-empty-workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.run-empty-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.run-empty-workflow:hover {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+}
+
+.run-empty-workflow-name {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.run-empty-workflow-meta {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ── Bob progress pill (kept) ────────────── */
+.bob-step-pill {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  animation: bob-step-fade-in 0.18s ease;
+  box-sizing: border-box;
+}
+
+@keyframes bob-step-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bob-step-spinner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  border-top-color: transparent;
+  animation: bob-step-spin 0.9s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes bob-step-spin {
+  to { transform: rotate(360deg); }
+}
+
+.bob-step-label {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bob-step-stop {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.bob-step-stop:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+
+/* ── Input dock ─────────────────────────── */
+.run-input-dock {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 24px 18px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ── Calm surface: the status whisper ── */
+.run-empty-status {
+  margin: 10px 0 0;
+  font-size: var(--text-base);
+  color: var(--text-muted);
+}
+.run-empty-status-sep { color: var(--text-dim); }
+.run-empty-status-link {
+  padding: 0;
+  font-size: inherit;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.run-empty-status-link:hover { color: var(--accent); }

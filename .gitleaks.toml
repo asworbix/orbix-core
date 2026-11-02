@@ -1,0 +1,12 @@
+# gitleaks configuration: the default rules plus one allowlist.
+# CI (gitleaks-action) and scripts/prepare-public-release.sh both read this.
+
+[extend]
+useDefault = true
+
+# Connector endpoint templates name each endpoint with `key: "vendor_action"`.
+# The generic-api-key rule reads that as a credential; it is an identifier.
+[[allowlists]]
+description = "Connector endpoint identifiers are names, not secrets"
+regexTarget = "match"
+regexes = ['''key: "[a-z0-9_]+"''']

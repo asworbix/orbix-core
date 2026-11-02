@@ -1,0 +1,328 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "kind": "skill",
+      "slug": "meeting-notes",
+      "name": "meeting-notes",
+      "title": "Meeting notes",
+      "description": "Turn rough meeting notes or a transcript into a clean summary with decisions and action items",
+      "author": "Orbix",
+      "included": false,
+      "path": "marketplace/skills/meeting-notes.md",
+      "filename": "meeting-notes.md",
+      "content": "---\nname: meeting-notes\ndescription: Turn rough meeting notes or a transcript into a clean summary with decisions and action items\nauthor: Orbix\n---\n\nUse this when someone hands you notes or a transcript from a meeting and\nwants them cleaned up.\n\n1. Read everything first. Do not summarise line by line.\n2. Write a title: the meeting's subject and date, if you can tell them.\n3. Then three short parts:\n   - **What was decided.** One line per decision, in plain words.\n   - **Action items.** One line each: who, what, and by when. If the notes\n     do not say who or when, write \"owner?\" or \"date?\" rather than guessing.\n   - **Open questions.** Anything raised and not settled.\n4. Leave out small talk and anything repeated.\n5. Keep names exactly as they appear in the notes.\n\nIf the person asks for it, offer to save the summary as a note or a Word\ndocument, or to turn the action items into reminders.\n"
+    },
+    {
+      "kind": "skill",
+      "slug": "reply-to-email",
+      "name": "reply-to-email",
+      "title": "Reply to email",
+      "description": "Draft a reply to an email in the person's own tone, short and ready to send",
+      "author": "Orbix",
+      "included": false,
+      "path": "marketplace/skills/reply-to-email.md",
+      "filename": "reply-to-email.md",
+      "content": "---\nname: reply-to-email\ndescription: Draft a reply to an email in the person's own tone, short and ready to send\nauthor: Orbix\n---\n\nUse this when someone asks you to answer an email.\n\n1. Read the whole thread, not only the last message.\n2. Work out what the sender actually needs: an answer, a decision, a date,\n   a document, or just an acknowledgement.\n3. Write the reply:\n   - Start with the answer. No \"I hope this email finds you well\".\n   - Match the length of the sender's email, or shorter.\n   - Match the person's own tone from their earlier messages in the thread.\n   - If something is missing to answer properly, ask one clear question.\n4. Show the draft and ask before sending. Never send without a yes.\n"
+    },
+    {
+      "kind": "skill",
+      "slug": "weekly-review",
+      "name": "weekly-review",
+      "title": "Weekly review",
+      "description": "Walk through the past week and plan the next one from calendar, reminders, and notes",
+      "author": "Orbix",
+      "included": false,
+      "path": "marketplace/skills/weekly-review.md",
+      "filename": "weekly-review.md",
+      "content": "---\nname: weekly-review\ndescription: Walk through the past week and plan the next one from calendar, reminders, and notes\nauthor: Orbix\n---\n\nUse this when someone asks for a weekly review, usually on a Friday or a\nSunday.\n\n1. Read the past seven days of calendar events, the open and completed\n   reminders, and notes changed this week.\n2. Write four short parts:\n   - **Done this week.** What actually got finished. Be concrete.\n   - **Still open.** Reminders and loose ends, oldest first.\n   - **Next week.** The fixed points in the calendar, and gaps worth\n     protecting for focused work.\n   - **Three priorities.** Your suggestion for the three things that matter\n     most next week, each with a first step.\n3. Keep it to one screen. Ask whether to turn the priorities into reminders.\n"
+    },
+    {
+      "kind": "workflow",
+      "slug": "end-of-day",
+      "name": "End of day",
+      "description": "A short wrap-up at five o'clock: what happened today, what is still open, and the first thing for tomorrow",
+      "author": "Orbix",
+      "included": false,
+      "schedule": "0 17 * * 1-5",
+      "path": "marketplace/workflows/end-of-day.md",
+      "content": "Read today's calendar events.\nRead the reminders that are due today or overdue.\nRead the mail that arrived today and is still unread.\nWrite a short wrap-up: what happened today, what is still open, and the one thing to start with tomorrow.\nSave the wrap-up as a note called \"End of day\" with today's date.",
+      "title": "End of day"
+    },
+    {
+      "kind": "workflow",
+      "slug": "unanswered-mail",
+      "name": "Unanswered mail",
+      "description": "Every weekday morning, find mail from real people that has waited more than two days for an answer",
+      "author": "Orbix",
+      "included": false,
+      "schedule": "30 8 * * 1-5",
+      "path": "marketplace/workflows/unanswered-mail.md",
+      "content": "Read the mail from the last seven days.\nLeave out newsletters, notifications, and anything sent by a no-reply address.\nFind the messages from real people that I have not answered and that are older than two days.\nList them oldest first, with the sender, the subject, and one line on what they are waiting for.",
+      "title": "Unanswered mail"
+    },
+    {
+      "kind": "workflow",
+      "slug": "desktop-tidy",
+      "name": "Desktop tidy-up",
+      "description": "Looks at what is on your Desktop and suggests what to archive, delete or keep.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 17 * * 5",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Desktop tidy-up"
+    },
+    {
+      "kind": "workflow",
+      "slug": "inbox-digest",
+      "name": "Inbox digest",
+      "description": "Groups your newest mail by what needs you and what can wait.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 12 * * 1-5",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Inbox digest"
+    },
+    {
+      "kind": "workflow",
+      "slug": "meeting-prep",
+      "name": "Meeting prep",
+      "description": "Looks at today's meetings and prepares one line of context and two questions for each.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 8 * * 1-5",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Meeting prep"
+    },
+    {
+      "kind": "workflow",
+      "slug": "morning-brief",
+      "name": "Morning briefing",
+      "description": "Reads today's calendar and your newest mail, then writes a short brief for the day.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "30 7 * * 1-5",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Morning briefing"
+    },
+    {
+      "kind": "workflow",
+      "slug": "notes-to-actions",
+      "name": "Notes into action items",
+      "description": "Reads your latest notes and pulls out the action items with owners and dates where they are mentioned.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": null,
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Notes into action items"
+    },
+    {
+      "kind": "workflow",
+      "slug": "topic-watch",
+      "name": "Watch a topic",
+      "description": "Searches the web for a topic and writes what is new. Change the topic by telling Bob.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 9 * * *",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Watch a topic"
+    },
+    {
+      "kind": "workflow",
+      "slug": "weekly-status",
+      "name": "Weekly status",
+      "description": "Turns this week's calendar, notes and reminders into a status note you can send.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 16 * * 5",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "Weekly status"
+    },
+    {
+      "kind": "workflow",
+      "slug": "open-tasks",
+      "name": "What is on my plate",
+      "description": "Lists your open reminders in order of urgency with a suggested first move.",
+      "author": "Orbix",
+      "included": true,
+      "schedule": "0 8 * * *",
+      "path": "orbixcore/src-tauri/src/workflow_templates.rs",
+      "title": "What is on my plate"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "calendar-bridge",
+      "name": "Calendar",
+      "description": "Bob reads it directly on your computer. No account to connect.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/bridges/calendar.json",
+      "title": "Calendar"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "chatgpt",
+      "name": "ChatGPT",
+      "description": "Bob drives it through its developer tools, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/chatgpt.json",
+      "title": "ChatGPT"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "claude",
+      "name": "Claude",
+      "description": "Bob talks to it over MCP, or drives it through its developer tools.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/claude.json",
+      "title": "Claude"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "cursor",
+      "name": "Cursor",
+      "description": "Bob talks to it over MCP, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/cursor.json",
+      "title": "Cursor"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "github-desktop",
+      "name": "GitHub Desktop",
+      "description": "Bob uses the account you connected, or uses its MCP server.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/github-desktop.json",
+      "title": "GitHub Desktop"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "mail",
+      "name": "Mail",
+      "description": "Bob reads it directly on your computer, or opens things through its links.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/mail.json",
+      "title": "Mail"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "messages-bridge",
+      "name": "Messages",
+      "description": "Bob reads it directly on your computer. No account to connect.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/bridges/messages.json",
+      "title": "Messages"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "teams",
+      "name": "Microsoft Teams",
+      "description": "Bob uses the account you connected, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/teams.json",
+      "title": "Microsoft Teams"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "notes-bridge",
+      "name": "Notes",
+      "description": "Bob reads it directly on your computer. No account to connect.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/bridges/notes.json",
+      "title": "Notes"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "obsidian",
+      "name": "Obsidian",
+      "description": "Bob opens things through its links, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/obsidian.json",
+      "title": "Obsidian"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "outlook",
+      "name": "Outlook",
+      "description": "Bob uses the account you connected, or reads it directly on your computer.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/outlook.json",
+      "title": "Outlook"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "reminders-bridge",
+      "name": "Reminders",
+      "description": "Bob reads it directly on your computer. No account to connect.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/bridges/reminders.json",
+      "title": "Reminders"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "slack",
+      "name": "Slack",
+      "description": "Bob uses the account you connected, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/slack.json",
+      "title": "Slack"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "spotify",
+      "name": "Spotify",
+      "description": "Bob opens things through its links, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/spotify.json",
+      "title": "Spotify"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "vscode",
+      "name": "Visual Studio Code",
+      "description": "Bob opens things through its links, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/vscode.json",
+      "title": "Visual Studio Code"
+    },
+    {
+      "kind": "paired-app",
+      "slug": "zoom",
+      "name": "Zoom",
+      "description": "Bob opens things through its links, or reads and types into its window.",
+      "author": "Orbix",
+      "included": true,
+      "path": "orbixcore/src-tauri/resources/peers/zoom.json",
+      "title": "Zoom"
+    },
+    {
+      "kind": "connector",
+      "slug": "linkedin",
+      "name": "LinkedIn",
+      "description": "Connects LinkedIn. Actions: userinfo, draft_post, post.",
+      "author": "Orbix",
+      "included": true,
+      "version": "0.1.0",
+      "hosts": [
+        "api.linkedin.com",
+        "www.linkedin.com"
+      ],
+      "path": "orbixcore/src-tauri/resources/modules/linkedin/v1",
+      "title": "LinkedIn"
+    }
+  ]
+}

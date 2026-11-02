@@ -1,0 +1,208 @@
+name: Release
+
+# Builds the desktop app for macOS (arm64 and x86_64) and Windows (x64) on
+# a version tag (v*), or on demand, and publishes a DRAFT GitHub Release
+# with the DMGs and installers, updater artifacts (when signed), and a
+# SHA256SUMS.txt. Review the draft, then publish it. Apple signing and
+# notarization switch on when the Apple secrets exist, and Windows
+# Authenticode signing switches on when the WINDOWS_SIGN_COMMAND variable
+# exists (see orbixcore/src-tauri/scripts/SIGNING.md). With neither, the
+# builds ship unsigned.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+          - os: macos-13
+            target: x86_64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    # Job-level so the signing steps can gate on it in their `if:`.
+    # Empty on forks / when unset => signing is skipped.
+    env:
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      # Repository VARIABLES, not secrets: the sign command names a tool
+      # and an account, the credentials it reads come from the secrets
+      # passed to the build step.
+      WINDOWS_SIGN_COMMAND: ${{ vars.WINDOWS_SIGN_COMMAND }}
+      WINDOWS_SIGN_TOOL_INSTALL: ${{ vars.WINDOWS_SIGN_TOOL_INSTALL }}
+    defaults:
+      run:
+        working-directory: orbixcore
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: orbixcore/package-lock.json
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            orbixcore/src-tauri -> target
+            bob-cli -> target
+
+      - name: Install npm deps
+        run: npm ci
+
+      # Deno is not bundled: the app downloads a checksum-verified copy on
+      # first connector use (src/deno_sidecar.rs), which keeps the DMG small.
+
+      # Stage the sidecars for this platform (bundle.externalBin): the
+      # orbix/bob CLI binaries everywhere, plus the orbix-speak speech
+      # helper on macOS (only its .swift source is tracked). Sidecars are
+      # named after the target triple, so it must match the --target
+      # below. build.rs hard-fails a release build if one is missing.
+      - name: Stage sidecars
+        env:
+          ORBIX_TARGET: ${{ matrix.target }}
+        run: npm run stage
+
+      # ── Code signing (optional) ──────────────────────────────────────
+      # Imports the Developer ID Application cert into a throwaway
+      # keychain so `tauri build` can sign the .app. Skipped when the
+      # secret is absent. Secrets: APPLE_CERTIFICATE (base64 .p12),
+      # APPLE_CERTIFICATE_PASSWORD, KEYCHAIN_PASSWORD.
+      - name: Import signing certificate
+        if: ${{ runner.os == 'macOS' && env.APPLE_CERTIFICATE != '' }}
+        env:
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/app-signing.keychain-db"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+      # Windows Authenticode (optional). New certificates live in a cloud
+      # HSM, so signing is a CLI the bundler calls per file
+      # (bundle.windows.signCommand): the app exe, the NSIS installer and
+      # its uninstaller, and the MSI. This step installs that CLI; which
+      # one is the repository's choice (SIGNING.md lists the routes).
+      - name: Install the Windows signing tool
+        if: ${{ runner.os == 'Windows' && env.WINDOWS_SIGN_COMMAND != '' && env.WINDOWS_SIGN_TOOL_INSTALL != '' }}
+        shell: pwsh
+        run: Invoke-Expression $env:WINDOWS_SIGN_TOOL_INSTALL
+
+      # The Apple env vars make `tauri build` sign with the imported
+      # Developer ID identity and, when APPLE_ID/APPLE_PASSWORD/
+      # APPLE_TEAM_ID are present, notarize and staple the .app. The
+      # TAURI_SIGNING_* vars sign the in-app-updater artifacts.
+      # release-config.mjs writes the config overrides from what is set:
+      # createUpdaterArtifacts only with the updater key (Tauri hard-fails
+      # that flag without one), the Windows sign command only on Windows.
+      # A file, not inline JSON: quotes do not survive npm's cmd shim.
+      # The signer credentials are passed for every cloud route; unset
+      # secrets arrive empty and are ignored.
+      - name: Build Tauri app
+        shell: bash
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          WINDOWS_SIGN_USERNAME: ${{ secrets.WINDOWS_SIGN_USERNAME }}
+          WINDOWS_SIGN_PASSWORD: ${{ secrets.WINDOWS_SIGN_PASSWORD }}
+          WINDOWS_SIGN_TOTP_SECRET: ${{ secrets.WINDOWS_SIGN_TOTP_SECRET }}
+        run: |
+          node src-tauri/scripts/release-config.mjs release-overrides.json
+          npm run tauri -- build --target ${{ matrix.target }} --config release-overrides.json
+
+      # A configured signer that silently did nothing must fail the
+      # release, not ship an unsigned installer under a "signed" banner.
+      - name: Verify Windows signatures
+        if: ${{ runner.os == 'Windows' && env.WINDOWS_SIGN_COMMAND != '' }}
+        shell: pwsh
+        run: |
+          $bundle = "src-tauri/target/${{ matrix.target }}/release/bundle"
+          $files = @(Get-ChildItem "$bundle/nsis/*.exe", "$bundle/msi/*.msi")
+          if ($files.Count -eq 0) { throw "no installers found under $bundle" }
+          foreach ($f in $files) {
+            $sig = Get-AuthenticodeSignature $f.FullName
+            "{0}: {1} ({2})" -f $f.Name, $sig.Status, $sig.SignerCertificate.Subject
+            if ($sig.Status -ne 'Valid') { throw "$($f.Name) is not validly signed: $($sig.StatusMessage)" }
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbixcore-${{ matrix.target }}
+          path: |
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz.sig
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.zip
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.sig
+            orbixcore/src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+          if-no-files-found: warn
+
+  release:
+    name: Publish draft release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: artifacts
+        run: |
+          find . -type f \( -name '*.dmg' -o -name '*.app.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.sig' \) -print0 \
+            | xargs -0 sha256sum | sed 's| \./| |' | tee SHA256SUMS.txt
+
+      # A draft: read the generated notes, check the artifacts, then
+      # publish from the Releases page.
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: |
+            artifacts/*.dmg
+            artifacts/*.app.tar.gz
+            artifacts/*.app.tar.gz.sig
+            artifacts/*.exe
+            artifacts/*.msi
+            artifacts/*.zip
+            artifacts/SHA256SUMS.txt

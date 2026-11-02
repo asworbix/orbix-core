@@ -1,0 +1,630 @@
+/* ── ChatHistory - Claude-style centered column ── */
+
+.chat-history {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.chat-history-inner {
+  width: 100%;
+  max-width: 720px;
+  padding: 20px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Message ── */
+
+.chat-message {
+  animation: fade-up 0.22s ease forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-message.user {
+  align-items: flex-end;
+}
+
+.chat-message.assistant {
+  align-items: stretch;
+}
+
+/* ── Assistant label row ── */
+
+.msg-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.msg-label-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  flex-shrink: 0;
+}
+
+.msg-label-name {
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.005em;
+}
+
+.msg-time {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.user-time {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  padding-right: 4px;
+}
+
+/* ── User bubble ── */
+
+.msg-bubble.user-bubble {
+  max-width: 82%;
+  padding: 11px 16px;
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  border-radius: 16px 16px 4px 16px;
+  font-size: var(--text-md);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid rgba(var(--accent-rgb), 0.16);
+}
+
+[data-theme="light"] .msg-bubble.user-bubble {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+/* ── Reasoning disclosure ── */
+
+.msg-thinking {
+  margin: 2px 0 4px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.msg-thinking-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.msg-thinking-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border-color: var(--border-bright);
+}
+
+.msg-thinking.open .msg-thinking-toggle {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.msg-thinking-chev {
+  transition: transform 140ms ease;
+  color: var(--text-dim);
+}
+
+.msg-thinking.open .msg-thinking-chev {
+  transform: rotate(180deg);
+}
+
+.msg-thinking.streaming .msg-thinking-toggle {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.msg-thinking.streaming .msg-thinking-toggle::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 2px;
+  animation: msg-thinking-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes msg-thinking-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+
+.msg-thinking-body {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-body);
+}
+
+/* ── Assistant content wrap ── */
+
+.msg-content-wrap {
+  position: relative;
+}
+
+.msg-content-wrap:hover .msg-actions {
+  opacity: 1;
+}
+
+.msg-content {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  user-select: text;
+  cursor: text;
+  -webkit-user-select: text;
+}
+
+.assistant-content {
+  padding: 0;
+}
+
+/* ── Markdown rhythm ── */
+
+.assistant-content p {
+  margin: 0 0 12px;
+}
+
+.assistant-content p:last-child {
+  margin-bottom: 0;
+}
+
+.assistant-content strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.assistant-content em {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.assistant-content ul,
+.assistant-content ol {
+  margin: 10px 0;
+  padding-left: 22px;
+}
+
+.assistant-content li {
+  margin: 5px 0;
+  line-height: 1.65;
+}
+
+.assistant-content li::marker {
+  color: var(--text-muted);
+}
+
+.assistant-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.assistant-content a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.assistant-content h1,
+.assistant-content h2,
+.assistant-content h3 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 18px 0 8px;
+  letter-spacing: -0.005em;
+}
+
+.assistant-content h1 { font-size: 19px; }
+.assistant-content h2 { font-size: 16.5px; }
+.assistant-content h3 { font-size: 14.5px; }
+
+.assistant-content blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 2px 0 2px 14px;
+  margin: 10px 0;
+  color: var(--text-secondary);
+}
+
+.assistant-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* Inline code - restrained, paper-toned */
+.assistant-content code {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1.5px 6px;
+  color: var(--text-primary);
+}
+
+/* Code blocks */
+.assistant-content pre {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+
+.assistant-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* ── Copy button ── */
+
+.msg-actions {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  display: flex;
+  gap: 2px;
+}
+
+.msg-copy-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+}
+
+.msg-copy-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border-color: var(--border-bright);
+}
+
+.msg-copy-btn.copied {
+  color: var(--success);
+  border-color: rgba(var(--accent-rgb), 0.2);
+}
+
+/* ── Tool result blocks ── */
+
+.tool-result-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.tool-result-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.tool-result-header:hover {
+  background: var(--bg-hover);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.success { background: var(--success); }
+.status-dot.failed  { background: var(--error); }
+
+.tool-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.toggle-arrow {
+  margin-left: auto;
+  transition: transform 0.15s ease;
+}
+
+.toggle-arrow.open {
+  transform: rotate(90deg);
+}
+
+.tool-result-output {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  line-height: 1.5;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ── Typing indicator ── */
+
+.msg-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0 0;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.85); }
+  40%           { opacity: 1;   transform: scale(1.1); }
+}
+
+/* ──────────────────────────────────────────────
+   Inputs wizard - one question at a time, brand-aligned
+   ────────────────────────────────────────────── */
+.msg-inputs {
+  margin-top: 12px;
+  padding: 18px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.msg-inputs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.msg-inputs-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.msg-inputs-progress {
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.msg-inputs-q {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg-inputs-label {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.msg-inputs-input,
+.msg-inputs-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 140ms ease, background 140ms ease;
+  box-sizing: border-box;
+}
+
+.msg-inputs-input::placeholder,
+.msg-inputs-textarea::placeholder { color: var(--text-muted); }
+
+.msg-inputs-input:focus,
+.msg-inputs-textarea:focus { border-color: var(--accent); }
+
+.msg-inputs-textarea {
+  min-height: 88px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.msg-inputs-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.msg-inputs-option {
+  padding: 8px 14px;
+  font-size: var(--text-base);
+  font-family: inherit;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.msg-inputs-option:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.msg-inputs-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.msg-inputs-back,
+.msg-inputs-next {
+  padding: 8px 14px;
+  font-size: var(--text-base);
+  font-family: inherit;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease, filter 140ms ease;
+}
+
+.msg-inputs-back {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+}
+
+.msg-inputs-back:not(:disabled):hover { color: var(--text-primary); }
+.msg-inputs-back:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.msg-inputs-next {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin-left: auto;
+}
+
+.msg-inputs-next:not(:disabled):hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.msg-inputs-next:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Continuation: an assistant turn that immediately follows a wizard answer
+   submission. We drop the avatar/name strip and tighten the gap so the
+   second Bob bubble visually flows under the first as one resolved turn. */
+.chat-message.assistant.is-continuation {
+  margin-top: -10px;
+}
+.chat-message.assistant.is-continuation .msg-thinking {
+  margin-top: 0;
+}
+
+/* ── Document chip (create_document results in chat) ── */
+.doc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  margin: 4px 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  max-width: 100%;
+}
+.doc-chip-kind {
+  padding: 2px 8px;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-full);
+  color: #fff;
+}
+.doc-chip-kind.docx { background: var(--info); }
+.doc-chip-kind.pptx { background: var(--error); }
+.doc-chip-kind.html { background: var(--success); }
+.doc-chip-kind.website { background: var(--accent); }
+.doc-chip-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+}
+.doc-chip-btn {
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.doc-chip-btn:hover { filter: brightness(1.15); }
+
+/* Step trail - what Bob did, above the reply. Quiet by design. */
+.bob-steps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary, rgba(233,231,226,0.55));
+  padding: 2px 0 6px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 8px;
+}
+.bob-steps-arrow { color: var(--accent); }
+.bob-steps-sep { opacity: 0.5; }
+.bob-step-item { white-space: nowrap; }

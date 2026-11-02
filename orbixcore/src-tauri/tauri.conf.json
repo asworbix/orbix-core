@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Orbix Core",
+  "version": "0.1.0",
+  "identifier": "ai.orbixcore.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "title": "Orbix Core",
+        "width": 960,
+        "height": 720,
+        "minWidth": 640,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "transparent": true,
+        "shadow": true,
+        "acceptFirstMouse": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://orbixcore.ai; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:8847 http://127.0.0.1:8848 http://localhost:8847 http://localhost:8848 http://127.0.0.1:3000 http://localhost:3000 https://orbixcore.ai https://www.orbixcore.ai"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "resources": [
+      "resources/modules/_sdk/orbix-sdk.ts"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "https://orbixcore.ai/api/update?target={{target}}&arch={{arch}}&current_version={{current_version}}"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJCRDkxQkFGNDg5RTQ5QkMKUldTOFNaNUlyeHZadXpuN0ZlT1V6TklwbXh5N2dJTU85RCtsd2FBUTIzV0xQdGFwTVloNDJyWnEK"
+    }
+  }
+}

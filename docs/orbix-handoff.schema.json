@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orbixcore.ai/schemas/orbix-handoff.schema.json",
+  "title": "Orbix HandoffSpec",
+  "description": "A task plan a frontier model hands to Orbix Core for free local execution. POST to http://127.0.0.1:51231/handoff with Authorization: Bearer <token>.",
+  "type": "object",
+  "required": ["title", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Names the run and any deliverable."
+    },
+    "goal": {
+      "type": "string",
+      "description": "One sentence of intent; injected as context into every prompt step."
+    },
+    "tone": {
+      "type": "string",
+      "description": "Style hint for prompt steps."
+    },
+    "deliverable": {
+      "type": "string",
+      "enum": ["doc", "panel", "none"],
+      "description": "doc = branded .docx, panel = live panel in My UI, none (default)."
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["kind", "instruction"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["prompt", "action", "tool"],
+            "description": "prompt = local model with prior outputs as context; action = shell command; tool = built-in Orbix tool."
+          },
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "description": "prompt: the prompt text. action: the shell command. tool: a human label."
+          },
+          "tool": {
+            "type": "string",
+            "enum": ["shell_exec", "file_read", "file_write", "file_edit", "file_list", "web_fetch"],
+            "description": "Required when kind is tool."
+          },
+          "args": {
+            "type": "object",
+            "description": "Tool arguments, e.g. {\"url\": \"...\"} for web_fetch or {\"path\": \"...\"} for file_read."
+          },
+          "label": {
+            "type": "string",
+            "description": "Optional short display label for the step."
+          }
+        }
+      }
+    }
+  }
+}

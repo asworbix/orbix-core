@@ -1,0 +1,291 @@
+{
+  "app": "Outlook",
+  "display_name": "Microsoft Outlook",
+  "aliases": [
+    "outlook",
+    "microsoft outlook",
+    "ms outlook"
+  ],
+  "process_name": "Microsoft Outlook",
+  "bundle_paths": [
+    "/Applications/Microsoft Outlook.app"
+  ],
+  "web_url": "https://outlook.office.com/mail",
+  "limited_hint": "Outlook is running the new interface, which hides mail from scripting. Read the open Outlook window instead (read_app_window), or open Outlook on the web with browse_navigate.",
+  "probe": [
+    "tell application \"Microsoft Outlook\"",
+    "  set visCount to 0",
+    "  try",
+    "    set visCount to visCount + (count of every exchange account)",
+    "  end try",
+    "  try",
+    "    set visCount to visCount + (count of every imap account)",
+    "  end try",
+    "  try",
+    "    set visCount to visCount + (count of every pop account)",
+    "  end try",
+    "  try",
+    "    set visCount to visCount + (count of every calendar)",
+    "  end try",
+    "  if visCount is 0 then return \"limited|no accounts or calendars visible to scripting\"",
+    "  return \"ok|\" & visCount & \" scriptable object(s)\"",
+    "end tell"
+  ],
+  "windows_prog_id": "Outlook.Application",
+  "windows_process_name": "OUTLOOK.EXE",
+  "windows_limited_paths": [
+    "%LOCALAPPDATA%/Microsoft/WindowsApps/olk.exe"
+  ],
+  "windows_limited_hint": "This PC has the new Outlook, which has no scripting interface (only classic Outlook does). Read mail and calendar through the connected Microsoft account instead (list_calendar_events; connect_oauth sets an account up), or read the open Outlook window with read_app_window.",
+  "windows_prelude": [
+    "$ol = New-Object -ComObject Outlook.Application",
+    "$ns = $ol.GetNamespace('MAPI')",
+    "function Iso($d) { try { return ([datetime]$d).ToString('yyyy-MM-ddTHH:mm:ss') } catch { return '' } }",
+    "function Inboxes { foreach ($s in $ns.Stores) { try { $s.GetDefaultFolder(6) } catch {} } }",
+    "function SenderAddr($m) {",
+    "  try {",
+    "    if ($m.SenderEmailType -eq 'EX') {",
+    "      $u = $m.Sender.GetExchangeUser()",
+    "      if ($u -and $u.PrimarySmtpAddress) { return $u.PrimarySmtpAddress }",
+    "    }",
+    "    return $m.SenderEmailAddress",
+    "  } catch { return '' }",
+    "}",
+    "function MailRow($m) {",
+    "  $wasRead = ([bool](-not $m.UnRead)).ToString().ToLower()",
+    "  return (Clean $m.Subject) + $fsep + (Clean $m.SenderName) + $fsep + (Clean (SenderAddr $m)) + $fsep + (Iso $m.ReceivedTime) + $fsep + $wasRead + $rsep",
+    "}",
+    "function AddNewest($items, $n, $rows) {",
+    "  $items.Sort('[ReceivedTime]', $true)",
+    "  $m = $items.GetFirst()",
+    "  $i = 0",
+    "  while ($null -ne $m -and $i -lt $n) {",
+    "    try { [void]$rows.Add([pscustomobject]@{ t = (Iso $m.ReceivedTime); row = (MailRow $m) }) } catch {}",
+    "    $i++",
+    "    $m = $items.GetNext()",
+    "  }",
+    "}",
+    "function Newest($rows, $n) { return (($rows | Sort-Object t -Descending | Select-Object -First $n | ForEach-Object { $_.row }) -join '') }",
+    "function EventRows($days) {",
+    "  $d1 = (Get-Date).Date",
+    "  $d2 = $d1.AddDays($days)",
+    "  $filter = \"[Start] >= '\" + $d1.ToString('g') + \"' AND [Start] < '\" + $d2.ToString('g') + \"'\"",
+    "  $out = ''",
+    "  foreach ($s in $ns.Stores) {",
+    "    $cal = $null",
+    "    try { $cal = $s.GetDefaultFolder(9) } catch {}",
+    "    if ($null -eq $cal) { continue }",
+    "    $items = $cal.Items",
+    "    $items.Sort('[Start]')",
+    "    $items.IncludeRecurrences = $true",
+    "    $hits = $items.Restrict($filter)",
+    "    $e = $hits.GetFirst()",
+    "    $i = 0",
+    "    while ($null -ne $e -and $i -lt 500) {",
+    "      try { $out += (Clean $e.Subject) + $fsep + (Iso $e.Start) + $fsep + (Iso $e.End) + $fsep + (Clean $s.DisplayName) + $fsep + (Clean $e.Location) + $rsep } catch {}",
+    "      $i++",
+    "      $e = $hits.GetNext()",
+    "    }",
+    "  }",
+    "  return $out",
+    "}"
+  ],
+  "windows_probe": [
+    "$n = $ns.Stores.Count",
+    "if ($n -eq 0) { 'limited|no mail stores visible to scripting' } else { \"ok|$n mail store(s)\" }"
+  ],
+  "actions": [
+    {
+      "id": "recent_messages",
+      "description": "Newest messages in the inbox: subject, sender, address, received time, read state.",
+      "args": [
+        {
+          "name": "limit",
+          "kind": "int",
+          "default": 10,
+          "min": 1,
+          "max": 50
+        }
+      ],
+      "returns": {
+        "kind": "records",
+        "columns": [
+          "subject",
+          "from_name",
+          "from_address",
+          "received",
+          "read"
+        ]
+      },
+      "timeout_secs": 45,
+      "script": [
+        "tell application \"Microsoft Outlook\"",
+        "  set msgCount to count of messages of inbox",
+        "  set n to {{limit}}",
+        "  if n > msgCount then set n to msgCount",
+        "  set out to \"\"",
+        "  repeat with i from 1 to n",
+        "    set m to message i of inbox",
+        "    set subj to \"\"",
+        "    try",
+        "      set subj to subject of m",
+        "    end try",
+        "    set sndName to \"\"",
+        "    set sndAddr to \"\"",
+        "    try",
+        "      set snd to sender of m",
+        "      set sndName to name of snd",
+        "      set sndAddr to address of snd",
+        "    end try",
+        "    set t to \"\"",
+        "    try",
+        "      set t to ((time received of m) as «class isot» as string)",
+        "    end try",
+        "    set wasRead to \"\"",
+        "    try",
+        "      set wasRead to (is read of m) as string",
+        "    end try",
+        "    set out to out & subj & fsep & sndName & fsep & sndAddr & fsep & t & fsep & wasRead & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ],
+      "windows_script": [
+        "$n = {{limit}}",
+        "$rows = New-Object System.Collections.ArrayList",
+        "foreach ($f in (Inboxes)) { AddNewest $f.Items $n $rows }",
+        "Newest $rows $n"
+      ]
+    },
+    {
+      "id": "unread_count",
+      "description": "Number of unread messages in the inbox.",
+      "returns": {
+        "kind": "text"
+      },
+      "timeout_secs": 15,
+      "script": [
+        "tell application \"Microsoft Outlook\"",
+        "  return (unread count of inbox) as string",
+        "end tell"
+      ],
+      "windows_script": [
+        "$c = 0",
+        "foreach ($f in (Inboxes)) { $c += $f.UnReadItemCount }",
+        "\"$c\""
+      ]
+    },
+    {
+      "id": "upcoming_events",
+      "description": "Calendar events starting within the next N days (default 1 = today), across all Outlook calendars: subject, start, end, calendar, location.",
+      "args": [
+        {
+          "name": "days",
+          "kind": "int",
+          "default": 1,
+          "min": 1,
+          "max": 31
+        }
+      ],
+      "returns": {
+        "kind": "records",
+        "columns": [
+          "title",
+          "start",
+          "end",
+          "calendar",
+          "location"
+        ],
+        "sort_column": "start",
+        "sort_desc": false
+      },
+      "timeout_secs": 90,
+      "script": [
+        "set d1 to current date",
+        "set time of d1 to 0",
+        "set d2 to d1 + ({{days}} * days)",
+        "tell application \"Microsoft Outlook\"",
+        "  set out to \"\"",
+        "  repeat with c in calendars",
+        "    set cname to \"\"",
+        "    try",
+        "      set cname to name of c",
+        "    end try",
+        "    try",
+        "      set evs to (every calendar event of c whose start time is greater than or equal to d1 and start time is less than d2)",
+        "      repeat with e in evs",
+        "        set loc to \"\"",
+        "        try",
+        "          set loc to location of e",
+        "        end try",
+        "        if loc is missing value then set loc to \"\"",
+        "        set out to out & (subject of e) & fsep & ((start time of e) as «class isot» as string) & fsep & ((end time of e) as «class isot» as string) & fsep & cname & fsep & loc & rsep",
+        "      end repeat",
+        "    end try",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ],
+      "windows_script": [
+        "EventRows {{days}}"
+      ]
+    },
+    {
+      "id": "search_messages",
+      "description": "Inbox messages whose subject or sender contains the query, newest first: subject, sender, address, received time, read state.",
+      "args": [
+        {
+          "name": "query",
+          "kind": "string"
+        },
+        {
+          "name": "limit",
+          "kind": "int",
+          "default": 10,
+          "min": 1,
+          "max": 50
+        }
+      ],
+      "returns": {
+        "kind": "records",
+        "columns": [
+          "subject",
+          "from_name",
+          "from_address",
+          "received",
+          "read"
+        ]
+      },
+      "timeout_secs": 60,
+      "windows_script": [
+        "$q = {{query}}",
+        "$n = {{limit}}",
+        "$lit = $q.Replace(\"'\", \"''\")",
+        "$filter = '@SQL=\"urn:schemas:httpmail:subject\" LIKE ''%' + $lit + '%'' OR \"urn:schemas:httpmail:fromname\" LIKE ''%' + $lit + '%'' OR \"urn:schemas:httpmail:fromemail\" LIKE ''%' + $lit + '%'''",
+        "$rows = New-Object System.Collections.ArrayList",
+        "foreach ($f in (Inboxes)) { AddNewest $f.Items.Restrict($filter) $n $rows }",
+        "Newest $rows $n"
+      ]
+    },
+    {
+      "id": "today_events",
+      "description": "Today's calendar events across all Outlook calendars: subject, start, end, calendar, location.",
+      "returns": {
+        "kind": "records",
+        "columns": [
+          "title",
+          "start",
+          "end",
+          "calendar",
+          "location"
+        ],
+        "sort_column": "start",
+        "sort_desc": false
+      },
+      "timeout_secs": 60,
+      "windows_script": [
+        "EventRows 1"
+      ]
+    }
+  ]
+}

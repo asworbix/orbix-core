@@ -1,0 +1,219 @@
+/* Imagine - Bob with free rein. Calm language: dark veil, one accent,
+   a transcript that reads as Bob thinking out loud, no confetti. */
+
+.imagine-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: color-mix(in srgb, var(--bg-base, #0d0d0f) 78%, transparent);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: imagine-fade 0.18s ease-out;
+}
+@keyframes imagine-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.imagine-panel {
+  width: min(760px, 92vw);
+  height: min(680px, 86vh);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated, #1a1a1e);
+  border: 1px solid var(--border, #2a2a30);
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* Header */
+.imagine-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border, #2a2a30);
+}
+.imagine-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent, #e07a5f);
+}
+.imagine-dot.starting,
+.imagine-dot.running { animation: imagine-breathe 2.2s ease-in-out infinite; }
+.imagine-dot.done { background: var(--success, #6cbf84); }
+.imagine-dot.stopped { background: var(--text-muted, #7a7872); }
+.imagine-dot.failed { background: var(--error, #d9534f); }
+@keyframes imagine-breathe { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+.imagine-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.imagine-name { font-size: 11px; letter-spacing: 0.12em; color: var(--text-secondary); }
+.imagine-status {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.imagine-stop {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #2a2a30);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+.imagine-stop:hover { color: var(--text-primary); border-color: var(--accent, #e07a5f); }
+.imagine-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.imagine-close:hover { color: var(--text-primary); }
+
+/* What Bob saw */
+.imagine-seen {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border, #2a2a30);
+  background: var(--bg-base, #121214);
+}
+.imagine-seen-label { flex-shrink: 0; font-size: 10px; letter-spacing: 0.12em; color: var(--text-secondary); }
+.imagine-seen-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.imagine-seen-app {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 260px;
+  padding: 3px 9px;
+  border: 1px solid var(--border, #2a2a30);
+  border-radius: 999px;
+  font-size: 12px;
+  animation: imagine-rise 0.25s ease-out;
+}
+@keyframes imagine-rise { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.imagine-seen-name { color: var(--text-primary); font-weight: 600; white-space: nowrap; }
+.imagine-seen-hint {
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.imagine-seen-count { font-size: 10px; color: var(--accent, #e07a5f); letter-spacing: 0.06em; }
+.imagine-muted { color: var(--text-secondary); font-size: 12px; }
+
+/* Transcript */
+.imagine-transcript {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.imagine-block {
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.imagine-block.bob { color: var(--text-secondary); }
+.imagine-block.bob.live { color: var(--text-primary); }
+.imagine-block.you {
+  align-self: flex-end;
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent, #e07a5f) 45%, transparent);
+  color: var(--text-primary);
+}
+
+.imagine-thinking { display: flex; gap: 5px; padding: 4px 0; }
+.imagine-thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent, #e07a5f);
+  animation: imagine-blink 1.2s ease-in-out infinite;
+}
+.imagine-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.imagine-thinking span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes imagine-blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+/* The finished thing */
+.imagine-result {
+  margin-top: 6px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 2px solid var(--accent, #e07a5f);
+  background: var(--bg-base, #121214);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+.imagine-result.stopped { border-left-color: var(--text-muted, #7a7872); }
+.imagine-result.failed { border-left-color: var(--error, #d9534f); }
+.imagine-result p { margin: 0 0 10px; }
+.imagine-result p:last-child { margin-bottom: 0; }
+.imagine-result h1, .imagine-result h2, .imagine-result h3 { font-size: 14px; margin: 12px 0 6px; }
+.imagine-result ul, .imagine-result ol { margin: 0 0 10px; padding-left: 20px; }
+.imagine-result code { font-size: 12px; }
+.imagine-result pre { overflow-x: auto; padding: 10px; border-radius: 8px; background: var(--bg-elevated, #1a1a1e); }
+.imagine-result a { color: var(--accent, #e07a5f); }
+.imagine-error { margin: 0; color: var(--text-secondary); white-space: pre-wrap; }
+
+/* Composer */
+.imagine-composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border, #2a2a30);
+}
+.imagine-composer input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-base, #121214);
+  border: 1px solid var(--border, #2a2a30);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 8px 10px;
+  font-family: inherit;
+}
+.imagine-composer input:focus { outline: none; border-color: var(--accent, #e07a5f); }
+.imagine-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #2a2a30);
+  background: var(--bg-base, #121214);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+.imagine-btn:hover { border-color: var(--accent, #e07a5f); }
+.imagine-btn:disabled { opacity: 0.45; cursor: default; border-color: var(--border, #2a2a30); }
+.imagine-btn-primary {
+  background: var(--accent, #e07a5f);
+  border-color: var(--accent, #e07a5f);
+  color: #fff;
+  font-weight: 600;
+}
+.imagine-btn-primary:hover:not(:disabled) { filter: brightness(1.08); }

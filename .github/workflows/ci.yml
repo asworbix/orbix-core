@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Rust (${{ matrix.os }})
+    # One job per supported platform (docs/platforms.md). ubuntu-latest joins
+    # when the Linux platform layer lands; each platform is one more entry
+    # here, never a fork.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: orbixcore/src-tauri
+      - name: cargo test
+        working-directory: orbixcore/src-tauri
+        # The CLI-drive / live-model / embeddings tests are #[ignore] and
+        # need Chrome or a running model server, so they are skipped in CI.
+        run: cargo test --bin orbixcore
+
+  cli:
+    name: orbix CLI (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: bob-cli
+      - name: cargo test
+        working-directory: bob-cli
+        run: cargo test
+
+  frontend:
+    name: Frontend (typecheck + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: orbixcore/package-lock.json
+      - name: npm ci
+        working-directory: orbixcore
+        run: npm ci
+      - name: tsc typecheck
+        working-directory: orbixcore
+        run: npx tsc --noEmit
+      - name: vite build
+        working-directory: orbixcore
+        run: npx vite build
+
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Scans the whole history of the push/PR. Free for personal
+      # accounts; an organization needs a GITLEAKS_LICENSE secret.
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+      - name: cargo audit (app)
+        working-directory: orbixcore/src-tauri
+        run: cargo audit
+      - name: cargo audit (cli)
+        working-directory: bob-cli
+        run: cargo audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: orbixcore/package-lock.json
+      - name: npm ci
+        working-directory: orbixcore
+        run: npm ci
+      # Only what ships in the app bundle; build-time tooling is tracked
+      # by Dependabot instead of blocking every PR.
+      - name: npm audit (runtime dependencies)
+        working-directory: orbixcore
+        run: npm audit --omit=dev --audit-level=high
+
+  hygiene:
+    name: Repo hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No em dashes (U+2014) in source or docs
+        run: |
+          if grep -rlP "\x{2014}" --include='*.rs' --include='*.ts' --include='*.tsx' --include='*.md' --include='*.yml' orbixcore bob-cli browser-extension docs README.md CONTRIBUTING.md SECURITY.md; then
+            echo "::error::Em dash (U+2014) found. Use a hyphen instead."
+            exit 1
+          fi
+          echo "No em dashes found."
+      - name: No personal home paths
+        run: |
+          # Placeholders like /Users/you/... and /Users/x/... are fine;
+          # a real account name is not.
+          if grep -rnE "/Users/[a-z]+/" --include='*.rs' --include='*.ts' --include='*.tsx' --include='*.md' --include='*.json' --include='*.sh' --include='*.yml' orbixcore bob-cli browser-extension docs README.md CONTRIBUTING.md SECURITY.md \
+               | grep -vE "/Users/(you|x|username|<[a-z]+>)/"; then
+            echo "::error::Hardcoded personal path found."
+            exit 1
+          fi
+          echo "No personal paths found."
+      - name: Marketplace index is current
+        # marketplace/index.json feeds orbixcore.ai/marketplace; it is built
+        # from marketplace/ and the app's bundled resources.
+        run: node scripts/marketplace-index.mjs --check

@@ -1,0 +1,35 @@
+name: Publish update manifest
+
+# When a GitHub Release is published (the draft from release.yml, once you
+# have reviewed it), build the Tauri updater manifest from its signed
+# artifacts and POST it to orbixcore.ai/api/update. Installed apps then
+# offer the new version. Needs the ORBIX_ADMIN_SECRET repository secret;
+# without it the job logs a notice and does nothing, so forks stay quiet.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish (e.g. v0.1.0)
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Post the updater manifest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          ORBIX_ADMIN_SECRET: ${{ secrets.ORBIX_ADMIN_SECRET }}
+        run: node scripts/publish-update-manifest.mjs

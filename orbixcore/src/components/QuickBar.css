@@ -1,0 +1,130 @@
+/* The quick bar window is transparent: only .qb is drawn. */
+html.quick-bar-root,
+html.quick-bar-root body,
+html.quick-bar-root #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.qb {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 520px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 14px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.qb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 70px;
+  padding: 0 18px;
+}
+
+.qb-mark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.qb-mark.busy {
+  animation: qb-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes qb-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+
+.qb-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-family: inherit;
+}
+
+.qb .qb-input,
+.qb .qb-input:focus,
+.qb .qb-input:focus-visible {
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.qb-input::placeholder {
+  color: var(--text-muted);
+}
+
+.qb-hint {
+  flex: none;
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+
+.qb-body {
+  border-top: 1px solid var(--border);
+  padding: 12px 18px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.qb-asked {
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.qb-step {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.qb-error {
+  color: var(--error);
+}
+
+.qb-reply p:first-child {
+  margin-top: 0;
+}
+
+.qb-reply p:last-child {
+  margin-bottom: 0;
+}
+
+.qb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.qb-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.qb-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}

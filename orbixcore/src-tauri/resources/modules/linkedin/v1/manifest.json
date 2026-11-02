@@ -1,0 +1,83 @@
+{
+  "slug": "linkedin",
+  "version": "0.1.0",
+  "display_name": "LinkedIn",
+  "vendor": "linkedin.com",
+  "driver": {"kind": "api"},
+  "auth": {
+    "kind": "oauth2",
+    "authorize_url": "https://www.linkedin.com/oauth/v2/authorization",
+    "token_url": "https://www.linkedin.com/oauth/v2/accessToken",
+    "scopes": ["openid", "profile", "email", "w_member_social"],
+    "refresh_supported": true
+  },
+  "host_allowlist": [
+    "api.linkedin.com",
+    "www.linkedin.com"
+  ],
+  "env_allowlist": [
+    "LINKEDIN_TOKEN"
+  ],
+  "vault_env_map": {
+    "LINKEDIN_TOKEN": "access_token"
+  },
+  "capabilities": ["network_outbound"],
+  "actions": {
+    "userinfo": {
+      "description": "Returns the authenticated user's LinkedIn id, name, and email via the OpenID Connect userinfo endpoint. Used by the scanner pipeline as a cheap smoke test that the access token is alive.",
+      "inputs": {"type": "object"},
+      "outputs": {
+        "type": "object",
+        "properties": {
+          "sub": {"type": "string"},
+          "name": {"type": "string"},
+          "email": {"type": "string"}
+        }
+      },
+      "errors": ["auth_expired", "upstream_error"],
+      "idempotent": true
+    },
+    "draft_post": {
+      "description": "Compose a UGC post payload for review WITHOUT submitting it. Used when the JobProfile review_gate is Always or FirstN; the returned draft routes to the pending-approval queue and the user approves before a publish call goes out.",
+      "inputs": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {"type": "string"},
+          "visibility": {"type": "string", "enum": ["PUBLIC", "CONNECTIONS"]}
+        }
+      },
+      "outputs": {"type": "object"},
+      "errors": [],
+      "idempotent": true
+    },
+    "post": {
+      "description": "Submit a UGC post. Only called by the bus when review_gate is AutoPublish, or after a user approval flips a draft to publish. The connector itself does not reason about review gates - that lives in the scheduler / approval flow.",
+      "inputs": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {"type": "string"},
+          "visibility": {"type": "string", "enum": ["PUBLIC", "CONNECTIONS"]}
+        }
+      },
+      "outputs": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"}
+        }
+      },
+      "errors": ["auth_expired", "upstream_error", "rate_limited"],
+      "idempotent": false,
+      "rate_limit": {"per_minute": 30}
+    }
+  },
+  "events": {},
+  "resource_limits": {
+    "memory_limit_mb": 128,
+    "cpu_limit_percent": 15,
+    "job_timeout_seconds": 15,
+    "max_concurrent": 4
+  },
+  "signature": null
+}

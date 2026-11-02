@@ -1,0 +1,28 @@
+{
+  "app": "ChatGPT",
+  "aliases": [
+    "chat gpt",
+    "openai chatgpt",
+    "gpt"
+  ],
+  "bundle_ids": [
+    "com.openai.chat",
+    "com.openai.codex"
+  ],
+  "process_names": [
+    "ChatGPT"
+  ],
+  "transports": [
+    "devtools",
+    "accessibility",
+    "clipboard"
+  ],
+  "mcp": {
+    "manual": "ChatGPT only adds tools through its own settings: Settings > Connectors > Add, with the Orbix endpoint from Orbix Settings > Models."
+  },
+  "devtools": {
+    "composer": "#prompt-textarea",
+    "send": "button[data-testid='send-button']",
+    "reply": "[data-message-author-role='assistant']"
+  }
+}

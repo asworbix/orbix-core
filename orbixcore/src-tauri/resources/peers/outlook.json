@@ -1,0 +1,47 @@
+{
+  "app": "Outlook",
+  "aliases": [
+    "microsoft outlook",
+    "new outlook"
+  ],
+  "bundle_ids": [
+    "com.microsoft.Outlook"
+  ],
+  "process_names": [
+    "Microsoft Outlook",
+    "OUTLOOK",
+    "Outlook",
+    "olk"
+  ],
+  "transports": [
+    "service",
+    "bridge",
+    "accessibility",
+    "clipboard"
+  ],
+  "service": "microsoft",
+  "bridge": "Outlook",
+  "url_actions": [
+    {
+      "id": "compose",
+      "description": "Open a new email draft with recipient, subject and body prefilled.",
+      "template": "mailto:{{to}}?subject={{subject}}&body={{body}}",
+      "args": [
+        {
+          "name": "to",
+          "description": "recipient email"
+        },
+        {
+          "name": "subject",
+          "description": "subject",
+          "required": false
+        },
+        {
+          "name": "body",
+          "description": "body text",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

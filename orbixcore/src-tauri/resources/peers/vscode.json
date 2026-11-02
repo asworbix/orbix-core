@@ -1,0 +1,38 @@
+{
+  "app": "Visual Studio Code",
+  "aliases": [
+    "vs code",
+    "vscode",
+    "code"
+  ],
+  "bundle_ids": [
+    "com.microsoft.VSCode"
+  ],
+  "process_names": [
+    "Code",
+    "Visual Studio Code"
+  ],
+  "transports": [
+    "url",
+    "accessibility",
+    "clipboard"
+  ],
+  "url_actions": [
+    {
+      "id": "open_file",
+      "description": "Open a file or folder in VS Code by absolute path (optionally at a line).",
+      "template": "vscode://file{{path}}:{{line}}",
+      "args": [
+        {
+          "name": "path",
+          "description": "absolute path"
+        },
+        {
+          "name": "line",
+          "description": "line number",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "app": "Spotify",
+  "aliases": [],
+  "bundle_ids": [
+    "com.spotify.client"
+  ],
+  "process_names": [
+    "Spotify"
+  ],
+  "transports": [
+    "url",
+    "accessibility",
+    "clipboard"
+  ],
+  "url_actions": [
+    {
+      "id": "search",
+      "description": "Search Spotify and show the results.",
+      "template": "spotify:search:{{query}}",
+      "args": [
+        {
+          "name": "query",
+          "description": "what to search for"
+        }
+      ]
+    },
+    {
+      "id": "play_uri",
+      "description": "Open a track, album, artist or playlist by Spotify URI.",
+      "template": "{{uri}}",
+      "args": [
+        {
+          "name": "uri",
+          "description": "spotify:track:..., spotify:album:..., spotify:playlist:..."
+        }
+      ]
+    }
+  ]
+}

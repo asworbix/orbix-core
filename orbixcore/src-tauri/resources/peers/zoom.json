@@ -1,0 +1,36 @@
+{
+  "app": "zoom.us",
+  "aliases": [
+    "zoom"
+  ],
+  "bundle_ids": [
+    "us.zoom.xos"
+  ],
+  "process_names": [
+    "zoom.us",
+    "Zoom"
+  ],
+  "transports": [
+    "url",
+    "accessibility",
+    "clipboard"
+  ],
+  "url_actions": [
+    {
+      "id": "join_meeting",
+      "description": "Join a meeting by id (and passcode if any).",
+      "template": "zoommtg://zoom.us/join?confno={{meeting}}&pwd={{passcode}}",
+      "args": [
+        {
+          "name": "meeting",
+          "description": "meeting id, digits only"
+        },
+        {
+          "name": "passcode",
+          "description": "passcode",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+.aq-badge {
+  background: #f59e0b;
+  color: #000;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+
+.aq-filter-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.aq-filter-bar button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.aq-filter-bar button.active {
+  background: var(--accent-soft, rgba(100, 60, 220, 0.1));
+  color: var(--accent, #7c6cff);
+  border-color: var(--accent, #7c6cff);
+}
+.aq-refresh {
+  margin-left: auto !important;
+}
+
+.aq-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.aq-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+.aq-item.pending {
+  border-left: 3px solid #f59e0b;
+}
+.aq-item.approved {
+  border-left: 3px solid var(--success);
+  opacity: 0.7;
+}
+.aq-item.rejected {
+  border-left: 3px solid var(--error);
+  opacity: 0.7;
+}
+
+.aq-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.aq-type-badge {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.aq-agent {
+  font-size: var(--text-2xs);
+  color: var(--text-secondary);
+}
+.aq-time {
+  font-size: var(--text-2xs);
+  color: var(--text-tertiary);
+  margin-left: auto;
+}
+
+.aq-summary {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.aq-amount {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 4px 0 8px;
+}
+
+.aq-pending-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.aq-btn {
+  font-size: var(--text-xs);
+  padding: 5px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.aq-btn.approve {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+.aq-btn.approve:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+.aq-btn.reject {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+.aq-btn.reject:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+.aq-btn.cancel {
+  background: none;
+  color: var(--text-secondary);
+}
+
+.aq-resolve-form {
+  margin-top: 8px;
+}
+.aq-notes-input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  padding: 6px 8px;
+  resize: none;
+  margin-bottom: 6px;
+}
+.aq-resolve-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.aq-resolved-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: var(--text-2xs);
+  color: var(--text-secondary);
+}
+.aq-status-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+}
+.aq-status-badge.approved {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+}
+.aq-status-badge.rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+.aq-resolved-notes {
+  font-style: italic;
+  color: var(--text-tertiary);
+}

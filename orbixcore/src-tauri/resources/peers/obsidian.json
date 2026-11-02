@@ -1,0 +1,69 @@
+{
+  "app": "Obsidian",
+  "aliases": [
+    "obsidian md"
+  ],
+  "bundle_ids": [
+    "md.obsidian"
+  ],
+  "process_names": [
+    "Obsidian"
+  ],
+  "transports": [
+    "url",
+    "accessibility",
+    "clipboard"
+  ],
+  "url_actions": [
+    {
+      "id": "new_note",
+      "description": "Create a note with a name and content in a vault (opens it).",
+      "template": "obsidian://new?vault={{vault}}&name={{name}}&content={{content}}",
+      "args": [
+        {
+          "name": "vault",
+          "description": "vault name"
+        },
+        {
+          "name": "name",
+          "description": "note title"
+        },
+        {
+          "name": "content",
+          "description": "markdown body",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "open_note",
+      "description": "Open a note by name in a vault.",
+      "template": "obsidian://open?vault={{vault}}&file={{file}}",
+      "args": [
+        {
+          "name": "vault",
+          "description": "vault name"
+        },
+        {
+          "name": "file",
+          "description": "note name or path inside the vault"
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "description": "Search a vault.",
+      "template": "obsidian://search?vault={{vault}}&query={{query}}",
+      "args": [
+        {
+          "name": "vault",
+          "description": "vault name"
+        },
+        {
+          "name": "query",
+          "description": "search text"
+        }
+      ]
+    }
+  ]
+}

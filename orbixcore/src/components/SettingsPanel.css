@@ -1,0 +1,272 @@
+/* Role */
+
+/* Accent Color Picker */
+
+.panel-section-subheader {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin: 8px 0 4px;
+}
+
+.panel-btn.danger {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--error);
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.panel-btn.danger:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+/* About */
+.about-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.about-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.about-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.about-value {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* Claude Code terminal button */
+.claude-terminal-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.claude-terminal-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+}
+
+/* ── Consolidated settings: two-pane layout ── */
+.settings-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.settings-rail {
+  flex: 0 0 160px;
+  width: 160px;
+  border-right: 1px solid var(--border);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.settings-rail-item {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.settings-rail-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.settings-rail-item.active {
+  background: var(--accent-soft, rgba(108, 143, 255, 0.14));
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.settings-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+/* Row that opens a full editor panel from within Settings */
+.settings-launcher {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.settings-launcher:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.settings-launcher-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings-launcher-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-launcher-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ── Brand kit section ── */
+.brand-intro {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.brand-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.brand-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 84px;
+}
+.brand-swatch-chip {
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.brand-swatch-hex {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-secondary);
+}
+.brand-swatch-role {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.brand-field-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.brand-field-row .form-label { margin: 0; }
+.brand-sample-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.brand-sample-row .panel-btn { flex: 1; }
+.brand-hint {
+  display: block;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.brand-kit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+.brand-kit-row:last-child { border-bottom: none; }
+.brand-kit-dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 12px; }
+.brand-kit-name { flex: 1; color: var(--text-primary); }
+.brand-kit-active {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--success);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Brand logo */
+.brand-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.brand-logo-img {
+  height: 44px;
+  max-width: 200px;
+  object-fit: contain;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.brand-logo-missing {
+  flex: 1;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Row+label styling shared by the Theme toggle (originally from the
+   accent-color picker, which is gone). */
+.accent-color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+.accent-color-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}

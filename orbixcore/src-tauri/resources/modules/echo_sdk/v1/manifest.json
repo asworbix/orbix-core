@@ -1,0 +1,34 @@
+{
+  "slug": "echo_sdk",
+  "version": "0.1.0",
+  "display_name": "Echo (SDK)",
+  "vendor": "orbixcore.ai",
+  "driver": {"kind": "api"},
+  "auth": {"kind": "none"},
+  "host_allowlist": [],
+  "env_allowlist": [],
+  "vault_env_map": {},
+  "capabilities": [],
+  "actions": {
+    "ping": {
+      "description": "Echoes the inputs back. Same contract as the raw echo module, but the implementation uses orbix-sdk.ts so it is one screen of code rather than fifty lines of NDJSON glue.",
+      "inputs": {"type": "object"},
+      "outputs": {"type": "object"},
+      "errors": [],
+      "idempotent": true
+    },
+    "fail": {
+      "description": "Always throws an OrbixError. Used to verify that thrown errors land on the bus with the correct error_code instead of as opaque module_error strings.",
+      "errors": ["forced_failure"],
+      "idempotent": true
+    }
+  },
+  "events": {},
+  "resource_limits": {
+    "memory_limit_mb": 64,
+    "cpu_limit_percent": 5,
+    "job_timeout_seconds": 5,
+    "max_concurrent": 1
+  },
+  "signature": null
+}

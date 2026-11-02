@@ -1,0 +1,311 @@
+/* ── Audit Panel ────────────────────────────────── */
+
+.audit-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.audit-tabs button {
+  padding: 10px 14px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  position: relative;
+  transition: color 0.15s;
+}
+
+.audit-tabs button:hover { color: var(--text-secondary); }
+.audit-tabs button.active { color: var(--text-primary); }
+
+.audit-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Filters */
+.audit-filters {
+  display: flex;
+  gap: 6px;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.audit-filter-btn {
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.audit-filter-btn:hover { color: var(--text-secondary); border-color: var(--text-dim); }
+.audit-filter-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(99,102,241,0.08); }
+
+/* Audit entry */
+.audit-entry {
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.audit-entry:last-child { border-bottom: none; }
+
+.audit-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.audit-severity {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.audit-severity.Info { background: var(--accent); }
+.audit-severity.Warning { background: var(--warning); }
+.audit-severity.Critical { background: var(--error); }
+
+.audit-action {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.audit-time {
+  font-size: var(--text-2xs);
+  color: var(--text-dim);
+  margin-left: auto;
+}
+
+.audit-details {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  padding-left: 16px;
+}
+
+.audit-meta {
+  display: flex;
+  gap: 10px;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  padding-left: 16px;
+  margin-top: 2px;
+}
+
+.audit-category-badge {
+  font-size: var(--text-2xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-dim);
+}
+
+/* Compliance rule */
+.compliance-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.compliance-rule:last-child { border-bottom: none; }
+
+.compliance-rule-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.compliance-rule-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.compliance-rule-desc {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.compliance-rule-category {
+  font-size: var(--text-2xs);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Compliance score */
+.compliance-fleet-score {
+  text-align: center;
+  padding: 20px 0 14px;
+}
+
+.compliance-fleet-score-value {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.compliance-fleet-score-value.excellent { color: var(--success); }
+.compliance-fleet-score-value.good { color: var(--accent); }
+.compliance-fleet-score-value.fair { color: var(--warning); }
+.compliance-fleet-score-value.poor { color: var(--error); }
+
+.compliance-fleet-score-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.compliance-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.compliance-stat {
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.compliance-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.compliance-stat-label {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Violation */
+.violation-item {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
+}
+
+.violation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.violation-severity {
+  font-size: var(--text-2xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.violation-severity.high, .violation-severity.critical {
+  background: rgba(239,68,68,0.12);
+  color: var(--error);
+}
+
+.violation-severity.medium {
+  background: rgba(251,191,36,0.12);
+  color: var(--warning);
+}
+
+.violation-severity.low {
+  background: rgba(99,102,241,0.12);
+  color: var(--accent);
+}
+
+.violation-rule {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.violation-details {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.violation-meta {
+  display: flex;
+  gap: 10px;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Device compliance */
+.device-compliance {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+
+.device-compliance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.device-compliance-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.device-compliance-score {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.device-compliance-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.device-compliance-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.device-compliance-fill.excellent { background: var(--success); }
+.device-compliance-fill.good { background: var(--accent); }
+.device-compliance-fill.fair { background: var(--warning); }
+.device-compliance-fill.poor { background: var(--error); }
+
+.device-compliance-meta {
+  display: flex;
+  gap: 12px;
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}

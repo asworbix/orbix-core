@@ -1,0 +1,17 @@
+/* The drag overlay window is transparent and click-through; nothing here
+   may paint a background. */
+.pair-overlay-body,
+.pair-overlay-body #root {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.pair-overlay-canvas {
+  position: fixed;
+  inset: 0;
+  display: block;
+  background: transparent;
+  pointer-events: none;
+}

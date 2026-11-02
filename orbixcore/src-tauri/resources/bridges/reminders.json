@@ -1,0 +1,62 @@
+{
+  "app": "Reminders",
+  "display_name": "Reminders",
+  "aliases": ["reminders", "apple reminders"],
+  "process_name": "Reminders",
+  "bundle_paths": ["/System/Applications/Reminders.app", "/Applications/Reminders.app"],
+  "limited_hint": "Reminders has no lists configured on this Mac.",
+  "probe": [
+    "tell application \"Reminders\"",
+    "  set listCount to count of lists",
+    "  if listCount is 0 then return \"limited|no reminder lists\"",
+    "  return \"ok|\" & listCount & \" list(s)\"",
+    "end tell"
+  ],
+  "actions": [
+    {
+      "id": "open_reminders",
+      "description": "Open (not completed) reminders across all lists: name, due date, list.",
+      "args": [
+        { "name": "limit", "kind": "int", "default": 20, "min": 1, "max": 100 }
+      ],
+      "returns": { "kind": "records", "columns": ["name", "due", "list"] },
+      "timeout_secs": 90,
+      "script": [
+        "tell application \"Reminders\"",
+        "  set out to \"\"",
+        "  set counter to 0",
+        "  repeat with l in lists",
+        "    set lname to name of l",
+        "    set openRs to (reminders of l whose completed is false)",
+        "    repeat with r in openRs",
+        "      set dd to \"\"",
+        "      try",
+        "        set d to due date of r",
+        "        if d is not missing value then set dd to (d as «class isot» as string)",
+        "      end try",
+        "      set out to out & (name of r) & fsep & dd & fsep & lname & rsep",
+        "      set counter to counter + 1",
+        "      if counter is greater than or equal to {{limit}} then return out",
+        "    end repeat",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    },
+    {
+      "id": "lists",
+      "description": "Names of all reminder lists.",
+      "returns": { "kind": "records", "columns": ["name"] },
+      "timeout_secs": 30,
+      "script": [
+        "tell application \"Reminders\"",
+        "  set out to \"\"",
+        "  repeat with l in lists",
+        "    set out to out & (name of l) & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    }
+  ]
+}

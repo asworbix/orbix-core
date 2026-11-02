@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Send to Orbix",
+  "version": "0.1.0",
+  "description": "Ship a plan from Claude.ai or Copilot to Orbix Core and let the free local model grind through it.",
+  "permissions": ["storage", "contextMenus"],
+  "host_permissions": ["http://127.0.0.1:51231/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*",
+        "https://copilot.microsoft.com/*",
+        "https://m365.cloud.microsoft/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "options_ui": { "page": "options.html", "open_in_tab": true }
+}

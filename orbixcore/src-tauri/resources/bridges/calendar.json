@@ -1,0 +1,64 @@
+{
+  "app": "Calendar",
+  "display_name": "Calendar",
+  "aliases": ["calendar", "apple calendar", "ical"],
+  "process_name": "Calendar",
+  "bundle_paths": ["/System/Applications/Calendar.app", "/Applications/Calendar.app"],
+  "limited_hint": "Calendar has no calendars configured on this Mac.",
+  "probe": [
+    "tell application \"Calendar\"",
+    "  set calCount to count of calendars",
+    "  if calCount is 0 then return \"limited|no calendars configured\"",
+    "  return \"ok|\" & calCount & \" calendar(s)\"",
+    "end tell"
+  ],
+  "actions": [
+    {
+      "id": "upcoming_events",
+      "description": "Events starting within the next N days (default 1 = today), across all calendars: title, start, end, calendar, location.",
+      "args": [
+        { "name": "days", "kind": "int", "default": 1, "min": 1, "max": 31 }
+      ],
+      "returns": { "kind": "records", "columns": ["title", "start", "end", "calendar", "location"], "sort_column": "start", "sort_desc": false },
+      "timeout_secs": 90,
+      "script": [
+        "set d1 to current date",
+        "set time of d1 to 0",
+        "set d2 to d1 + ({{days}} * days)",
+        "tell application \"Calendar\"",
+        "  set out to \"\"",
+        "  repeat with c in calendars",
+        "    set cname to name of c",
+        "    try",
+        "      set evs to (every event of c whose start date is greater than or equal to d1 and start date is less than d2)",
+        "      repeat with e in evs",
+        "        set loc to \"\"",
+        "        try",
+        "          set loc to location of e",
+        "        end try",
+        "        if loc is missing value then set loc to \"\"",
+        "        set out to out & (summary of e) & fsep & ((start date of e) as «class isot» as string) & fsep & ((end date of e) as «class isot» as string) & fsep & cname & fsep & loc & rsep",
+        "      end repeat",
+        "    end try",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    },
+    {
+      "id": "calendars",
+      "description": "Names of all calendars.",
+      "returns": { "kind": "records", "columns": ["name"] },
+      "timeout_secs": 20,
+      "script": [
+        "tell application \"Calendar\"",
+        "  set out to \"\"",
+        "  repeat with c in calendars",
+        "    set out to out & (name of c) & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    }
+  ]
+}

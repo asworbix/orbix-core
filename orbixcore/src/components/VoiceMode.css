@@ -1,0 +1,169 @@
+/* ── Voice Mode (Full-Screen) ──────────────── */
+
+.voice-mode {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-gradient, var(--bg-base));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  animation: voice-fade-in 0.3s ease forwards;
+}
+
+/* Soft accent halo behind the orb keeps the surface from feeling flat. */
+.voice-mode::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 45%, var(--accent-soft) 0%, transparent 65%);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@keyframes voice-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Exit Button ──────────────────────────── */
+
+.voice-exit-btn {
+  position: absolute;
+  top: 48px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+  z-index: 10;
+}
+
+.voice-exit-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-bright);
+}
+
+/* ── Orb Wrapper ──────────────────────────── */
+
+.voice-orb-wrapper {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  transform: scale(1.3);
+}
+
+.voice-orb-wrapper:hover {
+  transform: scale(1.35);
+}
+
+.voice-orb-wrapper:active {
+  transform: scale(1.25);
+}
+
+.voice-phase-listening .voice-orb-wrapper {
+  animation: voice-orb-breathe 2s ease-in-out infinite;
+}
+
+@keyframes voice-orb-breathe {
+  0%, 100% { transform: scale(1.3); }
+  50%      { transform: scale(1.38); }
+}
+
+/* ── Phase Label ──────────────────────────── */
+
+.voice-phase-label {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.voice-phase-label.listening {
+  color: var(--accent);
+}
+
+.voice-phase-label.thinking {
+  color: var(--warning);
+}
+
+.voice-phase-label.speaking {
+  color: var(--success);
+}
+
+/* ── Waveform ─────────────────────────────── */
+
+.voice-waveform {
+  width: 320px;
+  height: 64px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.voice-waveform.active {
+  opacity: 1;
+}
+
+.voice-waveform-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Subtitle ─────────────────────────────── */
+
+.voice-subtitle {
+  max-width: 500px;
+  text-align: center;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  padding: 12px 20px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  animation: voice-sub-in 0.2s ease forwards;
+  transition: opacity 0.5s ease;
+}
+
+.voice-subtitle.fading {
+  opacity: 0;
+}
+
+@keyframes voice-sub-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Footer Hints ─────────────────────────── */
+
+.voice-hints {
+  position: absolute;
+  bottom: 24px;
+  display: flex;
+  gap: 20px;
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+}
+
+.voice-hints kbd {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 4px;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "echo",
+  "version": "0.1.0",
+  "display_name": "Echo",
+  "vendor": "orbixcore.ai",
+  "driver": {"kind": "api"},
+  "auth": {"kind": "none"},
+  "host_allowlist": [],
+  "env_allowlist": [],
+  "capabilities": [],
+  "actions": {
+    "ping": {
+      "description": "Echoes the inputs back to the caller. Used by Phase 2 acceptance tests; spawns with no network and no env access so any attempt to widen reach is blocked at the OS level.",
+      "inputs": {"type": "object"},
+      "outputs": {"type": "object"},
+      "errors": [],
+      "idempotent": true
+    }
+  },
+  "events": {},
+  "resource_limits": {
+    "memory_limit_mb": 64,
+    "cpu_limit_percent": 5,
+    "job_timeout_seconds": 5,
+    "max_concurrent": 1
+  },
+  "signature": null
+}

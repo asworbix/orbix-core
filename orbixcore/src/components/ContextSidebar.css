@@ -1,0 +1,217 @@
+.context-sidebar {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0 8px;
+  background: rgba(255,255,255,0.015);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.context-sidebar.expanded {
+  width: 170px;
+}
+
+.context-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Toggle button ── */
+.context-sidebar-toggle {
+  width: 100%;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.context-sidebar-toggle:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── Items container ── */
+.context-sidebar-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+}
+
+.context-sidebar-spacer {
+  flex: 1;
+  min-height: 8px;
+}
+
+/* ── Button (collapsed = icon only) ── */
+.context-sidebar-btn {
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  position: relative;
+  margin: 0 6px;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.context-sidebar-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+.context-sidebar-btn.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.context-sidebar-btn.active::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  width: 3px;
+  height: 14px;
+  border-radius: 3px 0 0 3px;
+  background: var(--accent);
+}
+
+/* ── Icon ── */
+.sidebar-btn-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Label (hidden in collapsed, shown in expanded) ── */
+.sidebar-btn-label {
+  display: none;
+}
+
+/* ── Expanded state ── */
+.context-sidebar.expanded .context-sidebar-btn {
+  justify-content: flex-start;
+  gap: 0;
+  padding-right: 10px;
+}
+
+.context-sidebar.expanded .sidebar-btn-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Starred (role-relevant) items ── */
+.context-sidebar-btn.starred {
+  color: var(--text-secondary);
+}
+
+/* ── Group ── */
+.context-sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.context-sidebar-group + .context-sidebar-group {
+  margin-top: 2px;
+}
+
+/* Group header - collapsed: thin divider with count */
+.context-sidebar-group-header {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 2px 6px;
+  border-radius: 4px;
+  padding: 0;
+  font-size: var(--text-2xs);
+}
+
+.context-sidebar-group-header:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+
+.context-sidebar-group-header.has-active {
+  color: var(--accent);
+}
+
+/* Collapsed count badge */
+.group-collapsed-count {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.06);
+  padding: 1px 5px;
+  border-radius: 9999px;
+}
+
+.context-sidebar-group-header:hover .group-collapsed-count {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.1);
+}
+
+/* Expanded group header */
+.context-sidebar.expanded .context-sidebar-group-header {
+  justify-content: flex-start;
+  padding: 0 10px 0 12px;
+  height: 26px;
+  gap: 6px;
+}
+
+.group-header-label {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.context-sidebar-group-header:hover .group-header-label {
+  color: var(--text-secondary);
+}
+
+.group-header-count {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.06);
+  padding: 0 5px;
+  border-radius: 9999px;
+  line-height: 16px;
+}
+
+.group-header-chevron {
+  transition: transform 0.2s ease;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.group-header-chevron.open {
+  transform: rotate(180deg);
+}

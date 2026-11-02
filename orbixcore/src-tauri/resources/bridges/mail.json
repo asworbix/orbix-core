@@ -1,0 +1,66 @@
+{
+  "app": "Mail",
+  "display_name": "Mail",
+  "aliases": ["mail", "apple mail"],
+  "process_name": "Mail",
+  "bundle_paths": ["/System/Applications/Mail.app", "/Applications/Mail.app"],
+  "limited_hint": "Mail has no accounts configured on this Mac. Add an account in Mail, or use the mail provider's web app with browse_navigate.",
+  "probe": [
+    "tell application \"Mail\"",
+    "  set acctCount to count of accounts",
+    "  if acctCount is 0 then return \"limited|no mail accounts configured\"",
+    "  return \"ok|\" & acctCount & \" account(s)\"",
+    "end tell"
+  ],
+  "actions": [
+    {
+      "id": "recent_messages",
+      "description": "Newest messages in the unified inbox: subject, sender, received time, read state.",
+      "args": [
+        { "name": "limit", "kind": "int", "default": 10, "min": 1, "max": 50 }
+      ],
+      "returns": { "kind": "records", "columns": ["subject", "from", "received", "read"] },
+      "timeout_secs": 45,
+      "script": [
+        "tell application \"Mail\"",
+        "  set msgCount to count of messages of inbox",
+        "  set n to {{limit}}",
+        "  if n > msgCount then set n to msgCount",
+        "  set out to \"\"",
+        "  repeat with i from 1 to n",
+        "    set m to message i of inbox",
+        "    set subj to \"\"",
+        "    try",
+        "      set subj to subject of m",
+        "    end try",
+        "    set snd to \"\"",
+        "    try",
+        "      set snd to sender of m",
+        "    end try",
+        "    set t to \"\"",
+        "    try",
+        "      set t to ((date received of m) as «class isot» as string)",
+        "    end try",
+        "    set wasRead to \"\"",
+        "    try",
+        "      set wasRead to (read status of m) as string",
+        "    end try",
+        "    set out to out & subj & fsep & snd & fsep & t & fsep & wasRead & rsep",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    },
+    {
+      "id": "unread_count",
+      "description": "Number of unread messages in the unified inbox.",
+      "returns": { "kind": "text" },
+      "timeout_secs": 15,
+      "script": [
+        "tell application \"Mail\"",
+        "  return (unread count of inbox) as string",
+        "end tell"
+      ]
+    }
+  ]
+}

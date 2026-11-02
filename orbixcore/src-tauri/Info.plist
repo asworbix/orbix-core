@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Orbix Core needs microphone access for voice input (speech-to-text).</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Orbix Core uses on-device speech recognition to transcribe your voice.</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Orbix Core needs screen recording access to capture processes and generate workflows.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Orbix Core reads your calendar, mail, and browser tabs through the apps you already use, so Bob can answer from them.</string>
+</dict>
+</plist>

@@ -1,0 +1,53 @@
+# macOS
+.DS_Store
+
+# Editor / IDE
+.vscode/
+*.swp
+
+# Node
+node_modules/
+
+# Env files (only .env.example should be committed)
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Rust / Tauri build output
+target/
+**/target/
+
+# Local secrets - must not ship
+orbixcore/src-tauri/credentials.json
+
+# Compiled Swift sidecars
+orbixcore/src-tauri/swift/orbix-speak
+orbixcore/src-tauri/swift/orbix-speak-bin
+orbixcore/src-tauri/swift/build/
+
+# Deno sidecar binaries (fetched via the download-deno scripts before build)
+# and bob CLI binaries (built via the build-bob scripts before tauri build).
+orbixcore/src-tauri/binaries/
+
+# bob-cli build output
+bob-cli/target/
+
+# Release config overrides written by src-tauri/scripts/release-config.mjs
+orbixcore/release-overrides.json
+
+# Xcode user-specific state
+**/xcuserdata/
+**/*.xcuserstate
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock
+
+# Dev scratch / personal notes
+feedback-*.md
+
+# Swift Package Manager build output (was tracked by mistake; carries absolute paths)
+**/.build/
+
+# scratch commit messages
+.commit_msg.txt

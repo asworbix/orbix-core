@@ -1,0 +1,41 @@
+{
+  "app": "Messages",
+  "display_name": "Messages",
+  "aliases": ["messages", "imessage"],
+  "process_name": "Messages",
+  "bundle_paths": ["/System/Applications/Messages.app", "/Applications/Messages.app"],
+  "limited_hint": "Messages exposes chat names but not message contents to scripting. Read the open conversation window instead (read_app_window).",
+  "probe": [
+    "tell application \"Messages\"",
+    "  return \"ok|\" & (count of chats) & \" chat(s)\"",
+    "end tell"
+  ],
+  "actions": [
+    {
+      "id": "recent_chats",
+      "description": "Chats visible in Messages: display name and chat id. Message contents are not readable through scripting; use read_app_window on the open conversation for that.",
+      "args": [
+        { "name": "limit", "kind": "int", "default": 20, "min": 1, "max": 100 }
+      ],
+      "returns": { "kind": "records", "columns": ["name", "id"] },
+      "timeout_secs": 30,
+      "script": [
+        "tell application \"Messages\"",
+        "  set out to \"\"",
+        "  set counter to 0",
+        "  repeat with c in chats",
+        "    set cname to \"\"",
+        "    try",
+        "      set cname to name of c",
+        "    end try",
+        "    if cname is missing value then set cname to \"\"",
+        "    set out to out & cname & fsep & (id of c) & rsep",
+        "    set counter to counter + 1",
+        "    if counter is greater than or equal to {{limit}} then return out",
+        "  end repeat",
+        "  return out",
+        "end tell"
+      ]
+    }
+  ]
+}

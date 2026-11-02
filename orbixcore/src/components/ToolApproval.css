@@ -1,0 +1,198 @@
+.tool-approval {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeUp 0.2s ease;
+}
+
+.tool-approval-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-approval-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tool-approval-info {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tool-approval-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.tool-approval-label {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.tool-approval-args {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.tool-arg {
+  display: flex;
+  gap: 6px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.tool-arg-key {
+  color: var(--text-muted);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  flex-shrink: 0;
+}
+
+.tool-arg-val {
+  color: var(--text-secondary);
+  word-break: break-all;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  white-space: pre-wrap;
+}
+
+.tool-approval-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid transparent;
+}
+
+.tool-btn.approve {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--success);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.tool-btn.approve:hover {
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.tool-btn.deny {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--error);
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.tool-btn.deny:hover {
+  background: rgba(248, 113, 113, 0.18);
+}
+
+.tool-approval-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Tool result in chat */
+.tool-result-block {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tool-result-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tool-result-header:hover {
+  background: var(--bg-hover);
+}
+
+.tool-result-header .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tool-result-header .status-dot.success { background: var(--success); }
+.tool-result-header .status-dot.failed { background: var(--error); }
+.tool-result-header .status-dot.running { background: var(--warning); }
+
+.tool-result-header .tool-name {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--text-secondary);
+}
+
+.tool-result-header .toggle-arrow {
+  margin-left: auto;
+  transition: transform 0.2s;
+}
+
+.tool-result-header .toggle-arrow.open {
+  transform: rotate(90deg);
+}
+
+.tool-result-output {
+  padding: 10px 12px;
+  font-size: var(--text-sm);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

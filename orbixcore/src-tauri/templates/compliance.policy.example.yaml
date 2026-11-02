@@ -1,0 +1,290 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Orbix Core - compliance.policy
+#
+#  Single source of truth for what's gated, who approves, what's retained,
+#  and where data may flow inside this workspace. Loaded at workspace open
+#  and re-loaded on save. The runtime enforces it; the audit log records
+#  every consultation, every decision, every override.
+#
+#  Solo installs get the same schema. One principal holds every role.
+#  Adding a teammate later is a config change, not a migration.
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: 1
+
+workspace_id: "00000000-0000-0000-0000-000000000000"   # UUID, generated at activation
+workspace_name: "Acme Inc."
+
+# ISO-4217 code used to interpret tiered rule amounts (1000 = 1000 of THIS).
+# Stamped on every monetary approval row in the audit log so an auditor never
+# has to guess whether "1000" meant USD, EUR, or DKK.
+base_currency: "USD"
+
+# Frameworks the workspace claims compliance with. Tags evidence reports
+# and turns on framework-specific rules (e.g. PHI handling needs HIPAA).
+frameworks:
+  - soc2_type2
+  - iso27001
+  - gdpr
+  - hipaa
+  - nis2
+  - ccpa
+  - finra
+
+# ─────────────────────────────────────────────
+#  Residency - where the data may go
+# ─────────────────────────────────────────────
+residency:
+  default_region: on_device
+  hard_gate: true                # fail rather than redact on residency violation
+  region_routes:                 # per-region allow-list of egress targets
+    eu:        [eu, on_device]
+    us:        [us, on_device]
+    uk:        [uk, eu, on_device]
+    apac:      [apac, on_device]
+    global:    [eu, us, uk, apac, global, on_device]
+    on_device: [on_device]
+
+# ─────────────────────────────────────────────
+#  Retention - what we keep, for how long
+# ─────────────────────────────────────────────
+retention:
+  audit_log:
+    mode: tombstone              # never destructive delete; right-to-erasure writes a tombstone
+    minimum_hold_days: 2555      # 7 years - FINRA floor; satisfies SOC 2 / HIPAA too
+  conversations_days: 365
+  generated_artifacts_days: 365
+  workflow_runs_per_workflow: 1000
+
+# Strict = fail the run when the relay can't tokenise an identifier.
+# Required by HIPAA. Choices: strict | mask | off (off is disallowed in compliance mode).
+redaction: strict
+
+# ─────────────────────────────────────────────
+#  Principals + roles
+# ─────────────────────────────────────────────
+principals:
+  - id: "11111111-1111-1111-1111-111111111111"
+    email: "owner@acme.com"
+    display_name: "Owner"
+    created_at: "2026-05-01T00:00:00Z"
+    key_fingerprint: "ed25519:abcd..."   # filled at key generation
+    devices:                              # device_ids of the principal's Mac/iPhone
+      - "mac-uuid"
+      - "iphone-uuid"
+    active: true
+
+  # Add team members later. Solo installs leave this with one entry.
+  # - id: "22222222-2222-2222-2222-222222222222"
+  #   email: "cfo@acme.com"
+  #   display_name: "CFO"
+  #   ...
+
+role_assignments:
+  owner:    ["11111111-1111-1111-1111-111111111111"]
+  admin:    ["11111111-1111-1111-1111-111111111111"]
+  approver: ["11111111-1111-1111-1111-111111111111"]
+  operator: ["11111111-1111-1111-1111-111111111111"]
+  auditor:  ["11111111-1111-1111-1111-111111111111"]
+  # cfo:    ["22222222-2222-2222-2222-222222222222"]    # add when you have finance separation
+
+# ─────────────────────────────────────────────
+#  Approval defaults (rules below override per-action)
+# ─────────────────────────────────────────────
+approval_defaults:
+  deadline_seconds: 3600         # 1 hour
+  on_timeout: hold               # hold | escalate | auto_reject. Never auto-approve.
+  channels:                      # all fire concurrently when an approval is needed
+    - apns                       # iPhone push via Vercel relay
+    - email                      # magic-link via Resend
+    - macos_local                # macOS notification center
+    - lan_websocket              # existing paired-LAN session
+
+# ─────────────────────────────────────────────
+#  Action gates - which actions need approval, by whom, with what shape
+#
+#  Keys match the action's tool/type. A workflow step targeting one of
+#  these triggers the rule unless the step explicitly sets
+#  `auto_approve: true` AND the rule allows override.
+# ─────────────────────────────────────────────
+action_gates:
+
+  # ── Outbound communication ───────────────────────────────────────────
+  gmail.send:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false           # initiator can't disable; high-risk action
+    tiers: null
+
+  outlook.send:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false
+    tiers: null
+
+  linkedin.publish:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false
+    tiers: null
+
+  slack.post:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false
+    tiers: null
+
+  intercom.reply:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false
+    tiers: null
+
+  # ── System-mutating ──────────────────────────────────────────────────
+  shell_exec:
+    kind: single_approver
+    approvers: [{kind: role, role: admin}]
+    deadline_seconds: 1800
+    on_timeout: hold
+    require_reason: true
+    require_attachment: false
+    overridable: false
+
+  file_write_outside_workdir:
+    kind: single_approver
+    approvers: [{kind: role, role: admin}]
+    deadline_seconds: 1800
+    on_timeout: hold
+    require_reason: true
+    require_attachment: false
+    overridable: false
+
+  # ── Twin / state-mutating ────────────────────────────────────────────
+  create_workflow:
+    kind: informational          # logged but doesn't block
+    approvers: []
+    deadline_seconds: null
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: true
+
+  delete_workflow:
+    kind: single_approver
+    approvers: [{kind: role, role: admin}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: true
+    require_attachment: false
+    overridable: false
+
+  create_agent:
+    kind: informational
+    approvers: []
+    deadline_seconds: null
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: true
+
+  delete_agent:
+    kind: single_approver
+    approvers: [{kind: role, role: admin}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: true
+    require_attachment: false
+    overridable: false
+
+  # ── Money - dual-control + tiered ────────────────────────────────────
+  stripe.charge:
+    kind: tiered
+    approvers: [{kind: role, role: approver}]   # used when no tier matches
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: true
+    require_attachment: true
+    overridable: false
+    tiers:
+      - min: 0
+        max: 1000
+        approvers: [{kind: role, role: approver}]
+        kind: single_approver
+      - min: 1000
+        max: 50000
+        approvers:
+          - {kind: role, role: approver}
+          - {kind: role, role: cfo}
+        kind: dual_control
+      - min: 50000
+        max: null
+        approvers:
+          - {kind: any_in_role, role: board}
+        kind: {quorum: {m: 2}}    # 2 of n board members
+        # require_reason and require_attachment inherit from the parent rule
+
+  stripe.refund:
+    kind: tiered
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: true
+    require_attachment: true
+    overridable: false
+    tiers:
+      - {min: 0,     max: 1000,  approvers: [{kind: role, role: approver}], kind: single_approver}
+      - {min: 1000,  max: 50000, approvers: [{kind: role, role: approver}, {kind: role, role: cfo}], kind: dual_control}
+      - {min: 50000, max: null,  approvers: [{kind: any_in_role, role: board}], kind: {quorum: {m: 2}}}
+
+  wise.transfer:
+    kind: tiered
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: true
+    require_attachment: true
+    overridable: false
+    tiers:
+      - {min: 0,     max: 1000,  approvers: [{kind: role, role: approver}], kind: single_approver}
+      - {min: 1000,  max: 50000, approvers: [{kind: role, role: approver}, {kind: role, role: cfo}], kind: dual_control}
+      - {min: 50000, max: null,  approvers: [{kind: any_in_role, role: board}], kind: {quorum: {m: 2}}}
+
+  # ── External writes ──────────────────────────────────────────────────
+  api_call.write:
+    kind: single_approver
+    approvers: [{kind: role, role: approver}]
+    deadline_seconds: 3600
+    on_timeout: hold
+    require_reason: false
+    require_attachment: false
+    overridable: false           # all writes off-device get gated, period
+
+# ─────────────────────────────────────────────
+#  Workspace toggles - the master switches
+# ─────────────────────────────────────────────
+toggles:
+  compliance_mode: true          # off = "draft" - actions still log, gates don't fire
+  signed_workflows: true         # workflow defs must be signed by editor's principal key
+  tombstone_only: true           # right-to-erasure never deletes destructively
+  eu_boundary: true              # EU-tagged data forbids non-EU egress
+  phi_tagging: true              # HIPAA - PHI entities encrypt-at-rest, log min-necessary

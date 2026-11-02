@@ -1,0 +1,105 @@
+/* Workspace profiles in Settings - compact rows, panel-native styling. */
+
+.ws-section { margin-bottom: 8px; }
+
+.ws-error {
+  padding: 8px 10px;
+  border: 1px solid var(--error, #C25B4E);
+  border-radius: 8px;
+  color: var(--error, #C25B4E);
+  font-size: var(--text-sm);
+  margin-bottom: 10px;
+}
+
+.ws-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ws-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-surface);
+}
+.ws-row.is-active { border-color: rgba(var(--accent-rgb), 0.45); }
+
+.ws-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  flex-shrink: 0;
+}
+.ws-row.is-active .ws-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.ws-name {
+  flex: 1;
+  font-size: var(--text-md);
+  color: var(--text-primary);
+}
+
+.ws-badge {
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ws-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+.ws-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
+.ws-btn:disabled { opacity: 0.45; cursor: default; }
+.ws-del { padding: 5px 9px; color: var(--text-muted); }
+.ws-del:hover { color: var(--error, #C25B4E); border-color: var(--error, #C25B4E); }
+.ws-create { border-color: rgba(var(--accent-rgb), 0.45); color: var(--accent); }
+
+.ws-new {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ws-new input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: var(--text-md);
+  outline: none;
+}
+.ws-new input:focus { border-color: var(--border-bright); }
+
+.ws-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 4px 0;
+  cursor: pointer;
+}
+.ws-opt-sub { margin-left: 22px; }
+
+.ws-fine {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 8px 0 0;
+}

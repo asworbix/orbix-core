@@ -1,0 +1,318 @@
+/* ── Monitor Panel ────────────────────────────── */
+
+.monitor-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.monitor-tabs button {
+  padding: 10px 14px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  position: relative;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.monitor-tabs button:hover { color: var(--text-secondary); }
+.monitor-tabs button.active { color: var(--text-primary); }
+
+.monitor-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.monitor-tab-count {
+  font-size: var(--text-2xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+}
+
+/* Activity feed */
+.monitor-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.monitor-event:last-child { border-bottom: none; }
+
+.monitor-event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.monitor-event-dot.Info { background: var(--accent); }
+.monitor-event-dot.Success { background: var(--success); }
+.monitor-event-dot.Warning { background: var(--warning); }
+.monitor-event-dot.Error { background: var(--error); }
+
+.monitor-event-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.monitor-event-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.monitor-event-details {
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.monitor-event-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+.monitor-event-badge {
+  font-size: var(--text-2xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(99,102,241,0.1);
+  color: var(--accent);
+}
+
+/* Fleet map */
+.monitor-map-container {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(0,0,0,0.2);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.monitor-map-legend {
+  display: flex;
+  gap: 14px;
+  padding: 6px 0;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+.monitor-map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.monitor-map-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Health cards */
+.monitor-health-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.monitor-health-card {
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.monitor-health-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.monitor-health-label {
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.monitor-device-health {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.monitor-device-health:last-child { border-bottom: none; }
+
+.monitor-device-health-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
+.monitor-device-health-role {
+  font-size: var(--text-xs);
+  color: var(--accent);
+  min-width: 80px;
+}
+
+.monitor-device-health-stats {
+  display: flex;
+  gap: 12px;
+  font-size: var(--text-xs);
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.monitor-device-health-bar {
+  width: 60px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.monitor-device-health-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--success);
+  transition: width 0.3s;
+}
+
+.monitor-device-health-bar-fill.bottleneck {
+  background: var(--error);
+}
+
+.monitor-bottleneck-tag {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+  background: rgba(248,113,113,0.12);
+  color: var(--error);
+  letter-spacing: 0.04em;
+}
+
+/* Presets */
+.monitor-preset-card {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.monitor-preset-card:hover {
+  border-color: rgba(99,102,241,0.3);
+}
+
+.monitor-preset-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.monitor-preset-desc {
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.monitor-preset-roles {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.monitor-preset-role {
+  font-size: var(--text-2xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(99,102,241,0.08);
+  color: var(--accent);
+}
+
+.monitor-preset-routes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+.monitor-preset-category {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  float: right;
+}
+
+.monitor-filters {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.monitor-filter-btn {
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.monitor-filter-btn:hover { color: var(--text-secondary); }
+.monitor-filter-btn.active {
+  background: rgba(99,102,241,0.1);
+  color: var(--accent);
+  border-color: rgba(99,102,241,0.2);
+}
+
+.monitor-section-header {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 12px 0 6px;
+}
