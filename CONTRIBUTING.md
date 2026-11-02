@@ -19,7 +19,7 @@ The iOS companion and the OAuth relay live in private repositories for now.
 
 ## Platforms
 
-One codebase, three targets: macOS is the reference platform, Windows is being merged for the launch, Linux comes next. Platform code is gated with `#[cfg(target_os = "...")]` inside the shared modules, returns the same JSON to the front end, and says plainly when a capability is not available on a platform. Never fork a platform into its own tree or branch. Status, the shared-versus-specific matrix, and the Windows and Linux work lists: [docs/platforms.md](docs/platforms.md).
+One codebase, three targets: macOS and Windows ship today, Linux comes next. Platform code is gated with `#[cfg(target_os = "...")]` inside the shared modules, returns the same JSON to the front end, and says plainly when a capability is not available on a platform. Never fork a platform into its own tree or branch. Status, the shared-versus-specific matrix, and the Windows and Linux work lists: [docs/platforms.md](docs/platforms.md).
 
 ## Development setup
 

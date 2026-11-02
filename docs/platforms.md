@@ -6,8 +6,8 @@ Orbix Core is one codebase for every desktop platform. The React front end is sh
 
 | Platform | Status | Ships as | Notes |
 |---|---|---|---|
-| **macOS** 13+ (Apple Silicon) | Reference platform. Every feature lands here first and is used daily. | `.dmg` | Intel builds are produced by the release workflow but are not tested daily. |
-| **Windows** 10/11 (x64) | Merged into this repository and building in CI. Ships with the open-source launch. One app bridge so far (classic Outlook over COM); installers are unsigned until an Authenticode certificate is enrolled. | NSIS `.exe` installer, MSI | `llama-server` build picked per machine: CUDA on NVIDIA, Vulkan on other GPUs, CPU otherwise, with automatic CPU fallback. |
+| **macOS** 13+ (Apple Silicon) | Supported. Signed and notarized. | `.dmg` | Six app bridges: Calendar, Mail, Outlook, Notes, Reminders, Messages. Intel Macs are not built. |
+| **Windows** 10/11 (x64) | Supported. One app bridge so far (classic Outlook over COM); the installers are not code-signed. | NSIS `.exe` installer, MSI | `llama-server` build picked per machine: CUDA on NVIDIA, Vulkan on other GPUs, CPU otherwise, with automatic CPU fallback. |
 | **Linux** (x64) | Next. Not started, and nothing in the shared code forbids it. | AppImage, `.deb` (planned) | The work list is at the bottom of this page. Contributions welcome. |
 
 **Supported** means all of the following: the app builds in CI on that OS, the backend tests pass there, the release workflow produces an artifact with a checksum (signed where the platform supports it), and every platform integration in the table below either works or tells the user plainly that it is not available yet. Until a platform meets all four it is "in progress", whatever the demo looks like.

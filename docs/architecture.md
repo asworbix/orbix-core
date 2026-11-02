@@ -2,7 +2,7 @@
 
 Orbix Core is a desktop app: a Rust backend inside a Tauri shell, a React front end in the WebView, and a local `llama-server` process that runs the model. Bob, the assistant, is the product surface. Everything else exists so that Bob can read, decide, and act on this machine.
 
-macOS is the reference platform; Windows and Linux share the same code with a thin platform layer (see [platforms.md](platforms.md)). This page describes the shared design and names the macOS implementation where a platform layer exists.
+macOS and Windows share the same code with a thin platform layer, and Linux will too (see [platforms.md](platforms.md)). This page describes the shared design and names the platform implementation where a platform layer exists.
 
 ## The big picture
 
