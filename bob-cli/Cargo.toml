@@ -24,13 +24,13 @@ serde_json = "1"
 clap = { version = "4", features = ["derive"] }
 futures-util = "0.3"
 atty = "0.2"
-anstream = "0.6"
+anstream = "1.0"
 anstyle = "1"
-dirs = "5"
+dirs = "7"
 # LAN peer discovery: browse for Orbix hosts advertising `_orbix._tcp` so
 # `orbix connect` lists them instead of the user typing an IP. Same crate the
 # app uses to advertise; pure Rust, cross-platform.
-mdns-sd = "0.20"
+mdns-sd = "0.21"
 
 [profile.release]
 opt-level = "z"
