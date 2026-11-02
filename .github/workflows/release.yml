@@ -182,13 +182,29 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
-          merge-multiple: true
 
-      - name: Checksums
-        working-directory: artifacts
+      # The bundles arrive in dmg/, macos/, nsis/ and msi/ folders; flatten
+      # them into release/. Tauri names the macOS updater archive
+      # "<product>.app.tar.gz" with no version or arch, and the update
+      # manifest and the site match on "_<version>_aarch64.app.tar.gz", so
+      # it is renamed here (the .sig covers the content, not the name).
+      # GitHub turns the space in "Orbix Core" into a dot on upload, so
+      # the files get the dotted name first and SHA256SUMS.txt matches.
+      - name: Collect, rename and checksum
         run: |
-          find . -type f \( -name '*.dmg' -o -name '*.app.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.sig' \) -print0 \
-            | xargs -0 sha256sum | sed 's| \./| |' | tee SHA256SUMS.txt
+          mkdir release
+          version="${GITHUB_REF_NAME#v}"
+          find artifacts -type f \( -name '*.dmg' -o -name '*.app.tar.gz' -o -name '*.exe' -o -name '*.msi' -o -name '*.zip' -o -name '*.sig' \) -print0 \
+            | while IFS= read -r -d '' f; do
+                name=$(basename "$f")
+                case "$name" in
+                  *.app.tar.gz|*.app.tar.gz.sig)
+                    case "$f" in *aarch64-apple-darwin*) arch=aarch64 ;; *) arch=x64 ;; esac
+                    name="${name/.app.tar.gz/_${version}_${arch}.app.tar.gz}" ;;
+                esac
+                cp "$f" "release/${name// /.}"
+              done
+          cd release && sha256sum * | tee SHA256SUMS.txt
 
       # A draft: read the generated notes, check the artifacts, then
       # publish from the Releases page.
@@ -196,11 +212,4 @@ jobs:
         with:
           draft: true
           generate_release_notes: true
-          files: |
-            artifacts/*.dmg
-            artifacts/*.app.tar.gz
-            artifacts/*.app.tar.gz.sig
-            artifacts/*.exe
-            artifacts/*.msi
-            artifacts/*.zip
-            artifacts/SHA256SUMS.txt
+          files: release/*
