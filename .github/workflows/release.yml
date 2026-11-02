@@ -1,6 +1,6 @@
 name: Release
 
-# Builds the desktop app for macOS (arm64 and x86_64) and Windows (x64) on
+# Builds the desktop app for macOS (Apple Silicon) and Windows (x64) on
 # a version tag (v*), or on demand, and publishes a DRAFT GitHub Release
 # with the DMGs and installers, updater artifacts (when signed), and a
 # SHA256SUMS.txt. Review the draft, then publish it. Apple signing and
@@ -27,8 +27,6 @@ jobs:
         include:
           - os: macos-14
             target: aarch64-apple-darwin
-          - os: macos-13
-            target: x86_64-apple-darwin
           - os: windows-latest
             target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
